@@ -17,16 +17,11 @@ from sklearn.model_selection import cross_val_predict
 from sklearn.model_selection import GridSearchCV
 from sklearn.utils.multiclass import unique_labels
 
-# test function
-def testFunction(argument):
-    print('Your argument: ' + argument)
-
-
 # Set value for k in cross validations
 k = 10
 
 
-# Confusion Matrix Report (from Exercise 3)
+# Confusion Matrix Report for prediction results (from Exercise 3)
 def confusion_matrix_report(y_true, y_pred):
     cm, labels = confusion_matrix(y_true, y_pred), unique_labels(y_true, y_pred)
     column_width = max([len(str(x)) for x in labels] + [5])  # 5 is value length
@@ -36,6 +31,13 @@ def confusion_matrix_report(y_true, y_pred):
         report += "{:>{}}".format(label1, column_width) + " ".join(
             ["{:{}d}".format(cm[i, j], column_width) for j in range(len(labels))]) + "\n"
     print(report)
+
+
+# Run a confusion matrix report based on a cross validation
+def confusion_matrix_report_cv(model, features, target):
+    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
+    predictions = cross_val_predict(model, features, target, cv=cross_validation)
+    confusion_matrix_report(target, predictions)
 
 
 # Cross validation for accuracy
@@ -51,18 +53,15 @@ def cv_accuracy(model, features, target):
     print("Average accuracy: " + avg_accuracy)
 
 
+def classification_report(y_true, y_pred):
+    print(classification_report(y_true, y_pred))
+
+
 # Print a classification report based on a cross validation
-def get_classification_report_cv(model, features, target):
+def classification_report_cv(model, features, target):
     cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
     predictions = cross_val_predict(model, features, target, cv=cross_validation)
     print(classification_report(target, predictions))
-
-
-# Print a confusion matrix report based on a cross validation
-def get_confusion_matrix_report_cv(model, features, target):
-    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    predictions = cross_val_predict(model, features, target, cv=cross_validation)
-    print(confusion_matrix_report(target, predictions))
 
 
 # Print ROC curve (based on exercise 4)
@@ -158,6 +157,13 @@ def grid_search_f1(model, features, target, positive_label, parameters):
     results = grid_search_estimator.cv_results_
     for i in range(len(results['params'])):
         print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
+
+
+# Print a cost matrix (check order!)
+def cost_matrix(y_true, y_pred, cost_fp, cost_fn):
+    cm = confusion_matrix(y_true, y_pred)
+    cost = cm[0][1] * cost_fp + cm[1][0] * cost_fn
+    print('Total cost of the model: ' + cost)
 
 
 # Calculate roc_avg (from exercise 4)
