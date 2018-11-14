@@ -1,41 +1,18 @@
 import xgboost as xgb
 import numpy as np
-from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score
+from sklearn.model_selection import StratifiedKFold, KFold
 
-def accuracy(array):
-    TN = array[0, 0]
-    TP = array[1, 1]
-    FN = array[1, 0]
-    FP = array[0, 1]
-
-    return ((TP + TN) / (TN + TP + FN + FP))
-
-
-def precision(array):
-    TN = array[0, 0]
-    TP = array[1, 1]
-    FN = array[1, 0]
-    FP = array[0, 1]
-
-    return (TP / (TP + FP))
-
-
-def recall(array):
-    TN = array[0, 0]
-    TP = array[1, 1]
-    FN = array[1, 0]
-    FP = array[0, 1]
-
-    return (TP / (TP + FN))
-
-def train_xgb_model(params, x_train, y_train, rounds, early_stopping, n_folds, random_state, i=0, shuffle = True):
+def train_xgb_model(params, x_train, y_train, rounds, early_stopping, n_folds, random_state, stratified = True,i=0, shuffle = True):
 
     # Model and hyperparameter selection
-    skf = StratifiedKFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+    if stratified:
+        kf = StratifiedKFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+    else:
+        kf = KFold(n_folds=n_folds, random_state=random_state, shuffle=shuffle)
 
     # Model Training
-    for (train_index, test_index) in skf.split(x_train, y_train):
+    for (train_index, test_index) in kf.split(x_train, y_train):
         # cross-validation randomly splits train data into train and validation data
         print('\n Fold %d' % (i + 1))
 
@@ -61,19 +38,19 @@ def train_xgb_model(params, x_train, y_train, rounds, early_stopping, n_folds, r
         scores_val = xgb_model.predict(x_val_cv)
 
         # evaluation
-        train_confusion_matrix = confusion_matrix(y_train_cv, np.around(scores_cv).astype(int))
-        val_confusion_matrix = confusion_matrix(y_val_cv, np.around(scores_val).astype(int))
+        #train_confusion_matrix = confusion_matrix(y_train_cv, np.around(scores_cv).astype(int))
+        #val_confusion_matrix = confusion_matrix(y_val_cv, np.around(scores_val).astype(int))
 
-        train_pc = accuracy(train_confusion_matrix)
-        train_pp = precision(train_confusion_matrix)
-        train_re = recall(train_confusion_matrix)
+        train_pc = accuracy_score(y_train_cv, scores_cv)
+        train_pp = precision_score(y_train_cv, scores_cv)
+        train_re = recall_score(y_train_cv, scores_cv)
         print('\n train-Accuracy: %.6f' % train_pc)
         print(' train-Precision: %.6f' % train_pp)
         print(' train-Recall: %.6f' % train_re)
 
-        eval_pc = accuracy(val_confusion_matrix)
-        eval_pp = precision(val_confusion_matrix)
-        eval_re = recall(val_confusion_matrix)
+        eval_pc = accuracy_score(y_val_cv,scores_val)
+        eval_pp = precision_score(y_val_cv,scores_val)
+        eval_re = recall_score(y_val_cv,scores_val)
         print('\n eval-Accuracy: %.6f' % eval_pc)
         print(' eval-Precision: %.6f' % eval_pp)
         print(' eval-Recall: %.6f' % eval_re)
