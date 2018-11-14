@@ -1,6 +1,6 @@
 # Imports
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from scipy import interp
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
@@ -64,25 +64,25 @@ def classification_report_cv(model, features, target):
     print(classification_report(target, predictions))
 
 
-# Print ROC curve (based on exercise 4)
-def print_roc(models, features, target, positive_label):
-    plt.figure(figsize=(10, 10))
-    plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r', label='Luck', alpha=.8)  # draw diagonal
-
-    count = 1
-    for model in models:
-        mean_fpr, mean_tpr, mean_auc, std_auc = get_roc(k, model, features.values, target, positive_label)
-        plt.plot(mean_fpr, mean_tpr, label='Model '+count+' (AUC: {:.3f} $\pm$ {:.3f})'.format(mean_auc, std_auc))
-        count += 1
-
-    plt.xlabel('false positive rate')
-    plt.ylabel('true positive rate')
-    plt.legend()
-    plt.show()
+# # Print ROC curve (based on exercise 4)
+# def print_roc(models, features, target, positive_label):
+#     plt.figure(figsize=(10, 10))
+#     plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r', label='Luck', alpha=.8)  # draw diagonal
+#
+#     count = 1
+#     for model in models:
+#         mean_fpr, mean_tpr, mean_auc, std_auc = get_roc(k, model, features.values, target, positive_label)
+#         plt.plot(mean_fpr, mean_tpr, label='Model '+count+' (AUC: {:.3f} $\pm$ {:.3f})'.format(mean_auc, std_auc))
+#         count += 1
+#
+#     plt.xlabel('false positive rate')
+#     plt.ylabel('true positive rate')
+#     plt.legend()
+#     plt.show()
 
 
 # Grid search generalized (generalization of exercise 5)
-def grid_search(model, features, target, positive_label, parameters, score):
+def grid_search(model, features, target, positive_label, parameters, fit_params, score):
     if (score == "precision"):
         scoring = "precision_score"
     elif (score == "recall"):
@@ -93,7 +93,8 @@ def grid_search(model, features, target, positive_label, parameters, score):
         scoring = "accuracy_score"
     cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
     model_scorer = make_scorer(scoring, pos_label=positive_label)
-    grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer, cv=cross_validation)
+    grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
+                                         cv=cross_validation, fit_params= fit_params)
     grid_search_estimator.fit(features, target)
 
     print("best" + scoring + " is {} with params {}".format(grid_search_estimator.best_score_,
