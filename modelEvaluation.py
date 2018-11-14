@@ -96,7 +96,7 @@ def grid_search(model, features, target, positive_label, parameters, score):
     grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer, cv=cross_validation)
     grid_search_estimator.fit(features, target)
 
-    print("best f1-score is {} with params {}".format(grid_search_estimator.best_score_,
+    print("best" + scoring + " is {} with params {}".format(grid_search_estimator.best_score_,
                                                       grid_search_estimator.best_params_))
     results = grid_search_estimator.cv_results_
     for i in range(len(results['params'])):
