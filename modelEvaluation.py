@@ -28,7 +28,7 @@ k = 10
 # Confusion Matrix Report for prediction results (from Exercise 3)
 def confusion_matrix_report(y_true, y_pred):
     cm, labels = confusion_matrix(y_true, y_pred), unique_labels(y_true, y_pred)
-    column_width = max([len(str(x)) for x in labels] + [5])  # 5 is value length
+    column_width = max([len(str(x)) for x in labels] + [6])  # 5 is value length
     report = " " * column_width + " " + "{:_^{}}".format("Prediction", column_width * len(labels)) + "\n"
     report += " " * column_width + " ".join(["{:>{}}".format(label, column_width) for label in labels]) + "\n"
     for i, label1 in enumerate(labels):
@@ -99,7 +99,7 @@ def grid_search(model, features, target, positive_label, parameters, fit_params,
     model_scorer = make_scorer(scoring, pos_label=positive_label)
     grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
                                          cv=cross_validation)
-    grid_search_estimator.fit(features, target, fit_params= fit_params)
+    grid_search_estimator.fit(features, target, fit_params= fit_params, verbose=50)
 
     print("best" + scoring + " is {} with params {}".format(grid_search_estimator.best_score_,
                                                       grid_search_estimator.best_params_))
