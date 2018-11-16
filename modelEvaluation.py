@@ -88,15 +88,18 @@ def classification_report_cv(model, features, target):
 # Grid search generalized (generalization of exercise 5)
 def grid_search(model, features, target, positive_label, parameters, fit_params, score):
     if (score == "precision"):
-        scoring = "precision_score"
+        model_scorer = make_scorer(precision_score, pos_label=positive_label)
+        scoring = score
     elif (score == "recall"):
-        scoring = "recall_score"
+        model_scorer = make_scorer(recall_score, pos_label=positive_label)
+        scoring = score
     elif (score == "f1"):
-        scoring = "f1_score"
+        model_scorer = make_scorer(f1_score, pos_label=positive_label)
+        scoring = score
     else:
-        scoring = "accuracy_score"
+        model_scorer = make_scorer(accuracy_score, pos_label=positive_label)
+        scoring = "accuracy"
     cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    model_scorer = make_scorer(scoring, pos_label=positive_label)
     grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
                                          cv=cross_validation, verbose=50)
     grid_search_estimator.fit(features, target)
