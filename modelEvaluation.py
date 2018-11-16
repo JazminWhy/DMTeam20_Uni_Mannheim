@@ -98,7 +98,7 @@ def grid_search(model, features, target, positive_label, parameters, fit_params,
         model_scorer = make_scorer(f1_score, pos_label=positive_label)
         scoring = score
     else:
-        model_scorer = make_scorer(accuracy_score, pos_label=positive_label)
+        model_scorer = make_scorer(accuracy_score)
         scoring = "accuracy"
     cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
     grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
