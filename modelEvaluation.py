@@ -88,13 +88,13 @@ def classification_report_cv(model, features, target):
 # Grid search generalized (generalization of exercise 5)
 def grid_search(model, features, target, positive_label, parameters, fit_params, score, folds):
     k = folds
-    if (score == "precision"):
+    if score == "precision":
         model_scorer = make_scorer(precision_score, pos_label=positive_label)
         scoring = score
-    elif (score == "recall"):
+    elif score == "recall":
         model_scorer = make_scorer(recall_score, pos_label=positive_label)
         scoring = score
-    elif (score == "f1"):
+    elif score == "f1":
         model_scorer = make_scorer(f1_score, pos_label=positive_label)
         scoring = score
     else:
@@ -105,67 +105,39 @@ def grid_search(model, features, target, positive_label, parameters, fit_params,
                                          cv=cross_validation, fit_params=fit_params)
     grid_search_estimator.fit(features, target)
 
-    print("best" + scoring + " is {} with params {}".format(grid_search_estimator.best_score_,
+    print("best " + scoring + " is {} with params {}".format(grid_search_estimator.best_score_,
                                                       grid_search_estimator.best_params_))
     results = grid_search_estimator.cv_results_
     for i in range(len(results['params'])):
         print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
 
 
-# Grid search for accuracy (based on exercise 5)
-def grid_search_accuracy(model, features, target, positive_label, parameters):
+def grid_search_model(model, features, target, positive_label, parameters, fit_params, score, folds):
+    k = folds
+    if score == "precision":
+        model_scorer = make_scorer(precision_score, pos_label=positive_label)
+        scoring = score
+    elif score == "recall":
+        model_scorer = make_scorer(recall_score, pos_label=positive_label)
+        scoring = score
+    elif score == "f1":
+        model_scorer = make_scorer(f1_score, pos_label=positive_label)
+        scoring = score
+    else:
+        model_scorer = make_scorer(accuracy_score)
+        scoring = "accuracy"
     cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    accuracy_scorer = make_scorer(accuracy_score, pos_label=positive_label)
-    grid_search_estimator = GridSearchCV(model, parameters, scoring=accuracy_scorer, cv=cross_validation)
+    grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
+                                         cv=cross_validation, fit_params=fit_params)
     grid_search_estimator.fit(features, target)
 
-    print("best accuracy is {} with params {}".format(grid_search_estimator.best_score_,
+    print("best " + scoring + " is {} with params {}".format(grid_search_estimator.best_score_,
                                                       grid_search_estimator.best_params_))
     results = grid_search_estimator.cv_results_
     for i in range(len(results['params'])):
         print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
 
-
-# Grid search for precision (based on exercise 5)
-def grid_search_precision(model, features, target, positive_label, parameters):
-    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    precision_scorer = make_scorer(precision_score, pos_label=positive_label)
-    grid_search_estimator = GridSearchCV(model, parameters, scoring=precision_scorer, cv=cross_validation)
-    grid_search_estimator.fit(features, target)
-
-    print("best f1-score is {} with params {}".format(grid_search_estimator.best_score_,
-                                                      grid_search_estimator.best_params_))
-    results = grid_search_estimator.cv_results_
-    for i in range(len(results['params'])):
-        print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
-
-
-# Grid search for recall (based on exercise 5)
-def grid_search_recall(model, features, target, positive_label, parameters):
-    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    recall_scorer = make_scorer(recall_score, pos_label=positive_label)
-    grid_search_estimator = GridSearchCV(model, parameters, scoring=recall_scorer, cv=cross_validation)
-    grid_search_estimator.fit(features, target)
-
-    print("best f1-score is {} with params {}".format(grid_search_estimator.best_score_,
-                                                      grid_search_estimator.best_params_))
-    results = grid_search_estimator.cv_results_
-    for i in range(len(results['params'])):
-        print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
-
-
-# Grid search for f1 (based on exercise 5)
-def grid_search_f1(model, features, target, positive_label, parameters):
-    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    f1_scorer = make_scorer(f1_score, pos_label=positive_label)
-    grid_search_estimator = GridSearchCV(model, parameters, scoring=f1_scorer, cv=cross_validation)
-    grid_search_estimator.fit(features, target)
-
-    print("best f1-score is {} with params {}".format(grid_search_estimator.best_score_,
-                                                      grid_search_estimator.best_params_))
-    results = grid_search_estimator.cv_results_
-    for i in range(len(results['params'])):
-        print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
+    return grid_search_estimator.best_estimator_
 
 
 # Print a cost matrix (check order!)
@@ -204,27 +176,4 @@ def get_roc(model, features, target, positive_label):
 
     return mean_fpr, mean_tpr, mean_auc, std_auc
 
-def grid_search_model(model, features, target, positive_label, parameters, fit_params, score, listResults):
-    if (score == "precision"):
-        scoring = "precision_score"
-    elif (score == "recall"):
-        scoring = "recall_score"
-    elif (score == "f1"):
-        scoring = "f1_score"
-    else:
-        scoring = "accuracy_score"
-    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    model_scorer = make_scorer(scoring, pos_label=positive_label)
-    grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
-                                         cv=cross_validation)
-    grid_search_estimator.fit(features, target, fit_params= fit_params)
-
-    print("best" + scoring + " is {} with params {}".format(grid_search_estimator.best_score_,
-                                                      grid_search_estimator.best_params_))
-    if listResults == True:
-        results = grid_search_estimator.cv_results_
-        for i in range(len(results['params'])):
-            print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
-
-    return grid_search_estimator.best_estimator_
 
