@@ -17,6 +17,10 @@ from sklearn.model_selection import cross_val_predict
 from sklearn.model_selection import GridSearchCV
 from sklearn.utils.multiclass import unique_labels
 
+# Add loss functions -> check wikipedia article
+# Check if grid search can output ALL measures together
+
+
 # Set value for k in cross validations
 k = 10
 
@@ -196,4 +200,27 @@ def get_roc(model, features, target, positive_label):
 
     return mean_fpr, mean_tpr, mean_auc, std_auc
 
+def grid_search_model(model, features, target, positive_label, parameters, fit_params, score, listResults):
+    if (score == "precision"):
+        scoring = "precision_score"
+    elif (score == "recall"):
+        scoring = "recall_score"
+    elif (score == "f1"):
+        scoring = "f1_score"
+    else:
+        scoring = "accuracy_score"
+    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
+    model_scorer = make_scorer(scoring, pos_label=positive_label)
+    grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
+                                         cv=cross_validation)
+    grid_search_estimator.fit(features, target, fit_params= fit_params)
+
+    print("best" + scoring + " is {} with params {}".format(grid_search_estimator.best_score_,
+                                                      grid_search_estimator.best_params_))
+    if listResults == True:
+        results = grid_search_estimator.cv_results_
+        for i in range(len(results['params'])):
+            print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
+
+    return grid_search_estimator.best_estimator_
 
