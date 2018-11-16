@@ -200,7 +200,7 @@ def get_roc(model, features, target, positive_label):
 
     return mean_fpr, mean_tpr, mean_auc, std_auc
 
-def grid_search_model(model, features, target, positive_label, parameters, fit_params, score):
+def grid_search_model(model, features, target, positive_label, parameters, fit_params, score, listResults):
     if (score == "precision"):
         scoring = "precision_score"
     elif (score == "recall"):
@@ -217,10 +217,10 @@ def grid_search_model(model, features, target, positive_label, parameters, fit_p
 
     print("best" + scoring + " is {} with params {}".format(grid_search_estimator.best_score_,
                                                       grid_search_estimator.best_params_))
-    results = grid_search_estimator.cv_results_
-    for i in range(len(results['params'])):
-        print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
+    if listResults == True:
+        results = grid_search_estimator.cv_results_
+        for i in range(len(results['params'])):
+            print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
 
     return grid_search_estimator.best_estimator_
-
 
