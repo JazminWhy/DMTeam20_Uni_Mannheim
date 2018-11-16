@@ -81,30 +81,77 @@ print(y_test.shape)
 print(y_full.value_counts())
 
 #### END ##############
-
+"""
 xgb_params_1 = {
         'learning_rate': 0.01,
         'n_estimators': 1000,
         'max_depth': 5,
+        #'silent': False,
+        #'booster': 'gbtree',
         'min_child_weight': 1,
-        'gamma': 0,
+        #'max_delta_step':10,
+        #'gamma': 0,
         'subsample': 0.8,
         'colsample_bytree': 0.8,
+        #'colsample_bylevel':0.8,
         'objective': 'binary:logistic',
-        'nthread': -1,
-        'scale_pos_weight': 1,
-        'seed': 27,
+        #'nthread': -1,
+        #'scale_pos_weight': 1,
+        #'base_score':1,
+        #'random_state': 27,
         'eval_metric': 'logloss',
+        #importance_type: 'gain',
+        #'missing':np.nan,
+        #'reg_alpha':10,
+        #'reg_lambda': 10,
         #'num_class': 1,
-        'silent': 1
     }
 
+xgb_fit_params_1 = {
+    #'verbose': True,
+}
+
 xgb_model_1 = modelTraining.train_xgb_model(xgb_params_1,
+                                            xgb_fit_params_1,
                                             X_train,
                                             y_train,
-                                            rounds=10000,
                                             early_stopping=50,
                                             n_folds=10,
                                             random_state=123)
+"""
+
+lgbm_params_1 = {
+        'boosting_type': 'gbdt',
+        'num_leaves': 1000,
+        'max_depth': 10,
+        'learning_rate': 0.01,
+        'n_estimators': 1000,
+        #'subsample_for_bin': 1,
+        'objective': 'binary',
+        #'class_weight': 0,
+        #'min_split_gain': 0.8,
+        #'min_child_weight': 0.8,
+        #'min_child_samples':0.8,
+        #'subsample': 'binary:logistic',
+        #'subsample_freq': -1,
+        #'colsample_bytree': 1,
+        #'reg_alpha':1,
+        #'reg_lambda': 27,
+        #'random_state': 'logloss',
+        #'n_jobs': 'gain',
+        #'silent':np.nan,
+        #'importance_type':10,
+    }
+
+#lgbm_fit_params_1 = {
+#    'early_stopping_rounds': 50,
+#}
+
+
+xgb_model_1 = modelTraining.train_lgbm_model(X_train, y_train,
+                                             params= lgbm_params_1,
+                                             n_folds=10,
+                                             early_stopping=50,
+                                             random_state=123)
 
 
