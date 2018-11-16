@@ -1,18 +1,24 @@
 # Supress unnecessary warnings so that presentation looks clean
 import warnings
+
+from sklearn.neighbors import KNeighborsClassifier
+
 warnings.filterwarnings('ignore')
 
 import pandas as pd
 import modelTrainingMarius as modelTraining
-
+import modelEvaluation
+import xgboost as xgb
+from modelEvaluation import *
+from modelTrainingJasmin import *
 ### Data Loading #####
 
 #Print all rows and columns. Dont hide any.
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 
-bankingcalldata = pd.read_csv('/Users/mariusbock/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
-
+bankingcalldata = pd.read_csv('C:/Users/jawei/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
+#C:\Users\jawei\PycharmProjects\DMTeam20_Uni_Mannheim\input
 #### This is just for the model guys to train test their models #######
 
 print('Full dataset shape: ')
@@ -147,11 +153,37 @@ lgbm_params_1 = {
 #    'early_stopping_rounds': 50,
 #}
 
+#
+# xgb_model_1 = modelTraining.train_lgbm_model(X_train, y_train,
+#                                              params= lgbm_params_1,
+#                                              n_folds=10,
+#                                              early_stopping=50,
+#                                              random_state=123)
+#
+# xgb_model_1 = xgb.XGBClassifier()
+# params_xgb ={ 'learning_rate':  [0.01,0.1],
+#         'n_estimators': [100],#,1000],
+#         'max_depth': [4]}#,5]}
+#
+# fit_params = {
+#     #'early_stopping_rounds': 50,
+#     #'verbose': 50
+# }
+# 
+# grid_search(xgb_model_1, features=X_train, target=y_train, positive_label=1, parameters=params_xgb, score="kuchen",fit_params = fit_params, folds=2)
 
-xgb_model_1 = modelTraining.train_lgbm_model(X_train, y_train,
-                                             params= lgbm_params_1,
-                                             n_folds=10,
-                                             early_stopping=50,
-                                             random_state=123)
+# print("start")
+# result_knn = knn(data=X_train, target=y_train, test=X_test)
+# print("here")
+# print(result_knn)
+# print("finish")
+# confusion_matrix_report(y_test,result_knn)
 
+knn_grid = KNeighborsClassifier()
+params_knn ={"n_neighbors":[2,3,4,5],"algorithm":['auto', 'ball_tree']}#, 'kd_tree', 'brute']}
+#grid_search_f1(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn)
+print("done")
 
+best_model = grid_search_model(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn, fit_params=None, score="recall", folds=2)
+result_knn = general_training(best_model, data=X_train, target=y_train, test=X_test)
+confusion_matrix_report(y_test,result_knn)

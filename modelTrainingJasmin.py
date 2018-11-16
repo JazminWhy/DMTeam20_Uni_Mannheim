@@ -5,9 +5,45 @@ from sklearn.model_selection import StratifiedKFold, KFold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import GridSearchCV
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+
+from sklearn.neighbors.nearest_centroid import NearestCentroid
 
 def select_model():
     pass
+
+def naive_bayes(data, target, test):
+    #naive_bayes = GaussianNB()
+    #naive_bayes.fit(golf_encoded, golf['Play'])
+    pass
+
+def nearest_centroid():
+    # nearest_centroid_estimator = NearestCentroid()
+    # nearest_centroid_estimator.fit....
+    # result_arr_knn = knn_estimator.predict(test)
+    pass
+
+def knn(data, target, test, n = 3, weights = "uniform", algorithm="auto", leaf_size=30, p=2, metric="minkowski", metric_params=None, n_jobs=None):
+    knn_estimator = KNeighborsClassifier(n, weights, algorithm, leaf_size, p, metric, metric_params, n_jobs)
+    knn_estimator.fit(data, target)
+    result_arr = knn_estimator.predict(test)
+    return result_arr
+
+def decision_tree(data, target, parameters):
+    parameters = {
+        #'criterion': ['gini', 'entropy'],
+        #'max_depth': [1, 2, 3, 4, 5, None],
+        #'min_samples_split': [2, 3, 4, 5]
+    # d_tree = tree.DecisionTreeClassifier(parameters)
+    }
+    pass
+
+
+def general_training(best_model, data, target, test):
+    best_model.fit(data,target)
+    result_arr = best_model.predict(test)
+    return result_arr
 
 def train_xgb_model(params, x_train, y_train, rounds, early_stopping, n_folds, random_state, stratified = True,i=0, shuffle = True):
 
@@ -69,7 +105,3 @@ def train_xgb_model(params, x_train, y_train, rounds, early_stopping, n_folds, r
 
     # return model for evaluation and prediction
     return xgb_model
-
-
-
-
