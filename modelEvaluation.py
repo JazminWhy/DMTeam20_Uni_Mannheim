@@ -86,7 +86,8 @@ def classification_report_cv(model, features, target):
 
 
 # Grid search generalized (generalization of exercise 5)
-def grid_search(model, features, target, positive_label, parameters, fit_params, score):
+def grid_search(model, features, target, positive_label, parameters, fit_params, score, folds):
+    k = folds
     if (score == "precision"):
         model_scorer = make_scorer(precision_score, pos_label=positive_label)
         scoring = score
