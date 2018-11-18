@@ -178,12 +178,43 @@ lgbm_params_1 = {
 # print(result_knn)
 # print("finish")
 # confusion_matrix_report(y_test,result_knn)
+#
+# knn_grid = KNeighborsClassifier()
+# params_knn ={"n_neighbors":[2,3,4,5],"algorithm":['auto', 'ball_tree']}#, 'kd_tree', 'brute']}
+# #grid_search_f1(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn)
+# print("done")
+#
+# best_model = grid_search_model(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn, fit_params=None, score="recall", folds=2)
+# result_knn = train_general_model_results(best_model, x_train=X_train, y_train=y_train, x_test=X_test)
+# confusion_matrix_report(y_test,result_knn)
 
-knn_grid = KNeighborsClassifier()
-params_knn ={"n_neighbors":[2,3,4,5],"algorithm":['auto', 'ball_tree']}#, 'kd_tree', 'brute']}
-#grid_search_f1(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn)
-print("done")
 
-best_model = grid_search_model(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn, fit_params=None, score="recall", folds=2)
-result_knn = general_training(best_model, data=X_train, target=y_train, test=X_test)
-confusion_matrix_report(y_test,result_knn)
+## test KNN
+#params_knn = {'n_neighbors':3, 'weights' : "uniform", 'algorithm':"auto", 'leaf_size':30, 'p':2, 'metric':"minkowski", 'metric_params':None, 'n_jobs':None}
+#knn_model = train_knn(params_knn, fit_params=None, x_train=X_train, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)
+
+## test Decision_Trees
+#params_dt = {'criterion':'gini', 'splitter':'best', 'max_depth':None, 'min_samples_split':2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0.0, 'max_features':None, 'random_state':None, 'max_leaf_nodes':None, 'min_impurity_decrease':0.0, 'min_impurity_split':None, 'class_weight':None, 'presort':False}
+#dt_model = train_decision_tree(params_dt, fit_params=None, x_train=X_train, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)
+
+## test NaiveBayes
+# params_nb = {'priors': None, 'var_smoothing':1e-10}
+# naive_bayes_model = train_naive_bayes(params_nb, fit_params=None, x_train=X_train, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)
+
+## Test Nearest Centroid
+params_nearest_centroid = {'metric':'manhattan'}
+nearest_cetroid_model = train_nearest_centroid(params_nearest_centroid, fit_params=None, x_train=X_train, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)
+
+
+## test rule based classifier
+# X_train_rules = X_train.drop('nr.employed', axis=1)
+# X_train_rules = X_train_rules.drop('emp.var.rate', axis=1)
+# X_train_rules = X_train_rules.drop('cons.conf.idx', axis=1)
+# X_train_rules = X_train_rules.drop('cons.price.idx', axis=1)
+#
+# params_rule = {'max_depth_duplication':None,
+#                  'n_estimators':10,
+#                  'precision_min':0.2,
+#                  'recall_min':0.01,
+#                  'feature_names': list(X_train_rules.columns.values)}
+# rules = skope_rules(params_rule, fit_params=None, x_train=X_train_rules, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)
