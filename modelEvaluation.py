@@ -128,7 +128,7 @@ def grid_search_model(model, features, target, positive_label, parameters, fit_p
         scoring = "accuracy"
     cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
     grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
-                                         cv=cross_validation, fit_params=fit_params)
+                                         cv=cross_validation, fit_params=fit_params, verbose=2)
     grid_search_estimator.fit(features, target)
 
     print("best " + scoring + " is {} with params {}".format(grid_search_estimator.best_score_,

@@ -212,6 +212,10 @@ def train_general_model_results(best_model, x_train, y_train, x_test):
     result_arr = best_model.predict(x_test)
     return result_arr
 
+def predict_general_model_results(best_model, x_test):
+    result_arr = best_model.predict(x_test)
+    return result_arr
+
 def train_general_model(best_model, fit_params,x_train, y_train, n_folds, random_state, stratified = True, i=0, shuffle = True):
     # Model and hyperparameter selection
     if stratified:
@@ -228,7 +232,7 @@ def train_general_model(best_model, fit_params,x_train, y_train, n_folds, random
         y_train_cv, y_val_cv = y_train.iloc[train_index], y_train.iloc[test_index]
 
         # declare your model
-        best_model.fit(x_train_cv, y_train_cv, fit_params, eval_set=[(x_train_cv, y_train_cv), (x_val_cv, y_val_cv)])
+        best_model.fit(x_train_cv, y_train_cv)#, fit_params, eval_set=[(x_train_cv, y_train_cv), (x_val_cv, y_val_cv)])
 
         # predict train and validation set accuracy and get eval metrics
         scores_cv = best_model.predict(x_train_cv)
