@@ -46,7 +46,7 @@ def data_preprocessing(data_set,columns_to_preprocess,ONE_HOT):
     bank_data_norm = bank_data_new
 
     if ONE_HOT:
-        bank_data_cat = bank_data_new.select_dtypes(include='object')
+        bank_data_cat = bank_data_new.select_dtypes(include=['object'])
         # Get the columns with categorical values
         cat_columns = list(bank_data_cat.columns.values)
         print(cat_columns)
@@ -121,9 +121,9 @@ columns_to_bin = ['age','duration','campaign','pdays','emp.var.rate','campaign']
 check_missing_values(bank_data)
 
 binned_age = bin_age(bank_data)
-bank_data['age'] = binned_age
+bank_data['age'] = binned_age.astype('object')
 binned_duration = bin_duration(bank_data)
-bank_data['duration'] = binned_duration
+bank_data['duration'] = binned_duration.astype('object')
 print(bank_data.head())
 
 #binned_data = data_binned(bank_data, columns_to_bin)
