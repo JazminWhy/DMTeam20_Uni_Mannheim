@@ -11,6 +11,7 @@ from sklearn.datasets import load_iris
 from skrules import SkopeRules
 from sklearn.metrics import precision_recall_curve
 from matplotlib import pyplot as plt
+from sklearn import svm
 # implements NaiveBayes, KNN, NearestCentroid, DecisionTree, GeneralModel
 
 def train_naive_bayes(params, fit_params,x_train, y_train, n_folds, random_state, stratified = True, i=0, shuffle = True):
@@ -310,3 +311,49 @@ def skope_rules(params, fit_params,x_train, y_train, n_folds, random_state, stra
 
     # return model for evaluation and prediction
     return clf
+
+
+def train_svm(params, fit_params,x_train, y_train, n_folds, random_state, stratified = True, i=0, shuffle = True):
+    # Model and hyperparameter selection
+    if stratified:
+        kf = StratifiedKFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+    else:
+        kf = KFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+
+    sv_model = svm.SVC(**params)
+
+    # Model Training
+    for (train_index, test_index) in kf.split(x_train, y_train):
+        # cross-validation randomly splits train data into train and validation data
+        print('\n Fold %d' % (i + 1))
+
+        x_train_cv, x_val_cv = x_train.iloc[train_index], x_train.iloc[test_index]
+        y_train_cv, y_val_cv = y_train.iloc[train_index], y_train.iloc[test_index]
+
+        # declare your model
+        sv_model.fit(x_train_cv, y_train_cv )#, fit_params, eval_set=[(x_train_cv, y_train_cv), (x_val_cv, y_val_cv)])
+
+        # predict train and validation set accuracy and get eval metrics
+        scores_cv = sv_model.predict(x_train_cv)
+        scores_val = sv_model.predict(x_val_cv)
+
+        # training evaluation
+
+        train_pc = accuracy_score(y_train_cv, scores_cv)
+        train_pp = precision_score(y_train_cv, scores_cv)
+        train_re = recall_score(y_train_cv, scores_cv)
+        print('\n train-Accuracy: %.6f' % train_pc)
+        print(' train-Precision: %.6f' % train_pp)
+        print(' train-Recall: %.6f' % train_re)
+
+        eval_pc = accuracy_score(y_val_cv,scores_val)
+        eval_pp = precision_score(y_val_cv,scores_val)
+        eval_re = recall_score(y_val_cv,scores_val)
+        print('\n eval-Accuracy: %.6f' % eval_pc)
+        print(' eval-Precision: %.6f' % eval_pp)
+        print(' eval-Recall: %.6f' % eval_re)
+
+        i = i + 1
+
+    # return model for evaluation and prediction
+    return sv_model

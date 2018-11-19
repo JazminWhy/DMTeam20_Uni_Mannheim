@@ -87,8 +87,8 @@ print(y_test.shape)
 
 print(y_full.value_counts())
 print(y_train.value_counts())
-balance = True
-if (balance==True):
+balance = False
+if balance==True:
     #### END ####################### BALANCING data
     y_train = pd.DataFrame(data=y_train)
     y_train_balance = y_train[y_train==1]
@@ -221,17 +221,27 @@ lgbm_params_1 = {
 # print(recall_score(y_test,result_cnn))
 
 ################ GRID SEARCH KNN
-knn_grid = KNeighborsClassifier()
-params_knn = {"n_neighbors":[2,3,4,5],"algorithm":['auto', 'ball_tree','kd_tree', 'brute'], "metric":['euclidean', 'manhattan', 'minkowski', 'chebyshev']}
-best_model = grid_search_model(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn, fit_params=None, score="precision", folds=10)
-best_knn_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
-result_knn = predict_general_model_results(best_knn_model,x_test=X_test)
-confusion_matrix_report(y_test,result_knn)
-print(accuracy_score(y_test,result_knn))
-print(precision_score(y_test,result_knn))
-print(recall_score(y_test,result_knn))
+# knn_grid = KNeighborsClassifier()
+# params_knn = {"n_neighbors":[2,3,4,5],"algorithm":['auto', 'ball_tree','kd_tree', 'brute'], "metric":['euclidean', 'manhattan', 'minkowski', 'chebyshev']}
+# best_model = grid_search_model(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn, fit_params=None, score="precision", folds=10)
+# best_knn_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
+# result_knn = predict_general_model_results(best_knn_model,x_test=X_test)
+# confusion_matrix_report(y_test,result_knn)
+# print(accuracy_score(y_test,result_knn))
+# print(precision_score(y_test,result_knn))
+# print(recall_score(y_test,result_knn))
 
-
+## test SVM
+params_svm = {'C':1.0, 'cache_size':200, 'class_weight':None, 'coef0':0.0,
+    'decision_function_shape':'ovr', 'degree':3, 'gamma':'scale', 'kernel':'rbf',
+    'max_iter':-1, 'probability':False, 'random_state':123, 'shrinking':True,
+    'tol':0.001, 'verbose':True}
+svm_model = train_svm(params_svm, fit_params=None, x_train=X_train, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)
+result_svm= predict_general_model_results(svm_model,x_test=X_test)
+confusion_matrix_report(y_test,result_svm)
+print(accuracy_score(y_test,result_svm))
+print(precision_score(y_test,result_svm))
+print(recall_score(y_test,result_svm))
 ## test KNN
 #params_knn = {'n_neighbors':3, 'weights' : "uniform", 'algorithm':"auto", 'leaf_size':30, 'p':2, 'metric':"minkowski", 'metric_params':None, 'n_jobs':None}
 #knn_model = train_knn(params_knn, fit_params=None, x_train=X_train, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)
