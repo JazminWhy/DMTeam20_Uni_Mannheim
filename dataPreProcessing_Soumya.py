@@ -96,16 +96,39 @@ def data_binned(data_set, columns_to_bin):
     return binned_data_2d
 
 
+def bin_age(data_set):
+    bins = [0, 17, 34, 60, 100]
+    data_set['age'] = pd.cut(data_set['age'], bins, labels=['Child', 'Adult', 'Middle_aged', 'Old'])
+    print(data_set['age'])
+    return data_set['age']
+
+
+def bin_duration(data_set):
+    duration_in_min = data_set['duration']/60
+    bins = [0, 5, 10, 90]
+    data_set['duration'] = pd.cut(duration_in_min, bins, labels=['lessThan5min', '5minTo10min', 'moreThan10min'])
+    print(data_set['duration'])
+    return data_set['duration']
+
+
 bank_data = pd.read_csv('/Users/soumya/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
 print(pd.__version__)
 print(bank_data.head())
 to_be_preprocessed = ['age','duration','campaign','pdays','emp.var.rate','cons.price.idx','job','marital','education','default','housing','loan','contact','month','day_of_week','previous',
                  'poutcome']
 columns_to_bin = ['age','duration','campaign','pdays','emp.var.rate','campaign']
+
 check_missing_values(bank_data)
-binned_data = data_binned(bank_data, columns_to_bin)
-data_frame_binned = pd.DataFrame(binned_data)
-print(data_frame_binned.head())
+
+binned_age = bin_age(bank_data)
+bank_data['age'] = binned_age
+binned_duration = bin_duration(bank_data)
+bank_data['duration'] = binned_duration
+print(bank_data.head())
+
+#binned_data = data_binned(bank_data, columns_to_bin)
+#data_frame_binned = pd.DataFrame(binned_data)
+#print(data_frame_binned.head())
 #frames = [bank_data, data_frame_binned]
 #result_data = pd.concat(frames)
 data_preprocessed = data_preprocessing(bank_data, to_be_preprocessed, True)
