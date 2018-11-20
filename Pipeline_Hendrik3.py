@@ -122,7 +122,7 @@ if balance==True:
     y_train = train_full_balance['y']
     #print(y_train.shape)
 
-
+y_test.replace(('yes', 'no'), (1, 0), inplace=True)
 #print('X_train')
 #print(X_train.shape)
 #print('X_test')
@@ -303,15 +303,22 @@ lgbm_params_1 = {
 # print(recall_score(y_test,result_log))
 
 ################ GRID SEARCH KNN
-# knn_grid = KNeighborsClassifier()
-# params_knn = {"n_neighbors":[2,3,4,5],"algorithm":['auto', 'ball_tree','kd_tree', 'brute'], "metric":['euclidean', 'manhattan', 'minkowski', 'chebyshev']}
-# best_model = grid_search_model(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn, fit_params=None, score="precision", folds=10)
-# best_knn_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
-# result_knn = predict_general_model_results(best_knn_model,x_test=X_test)
-# confusion_matrix_report(y_test,result_knn)
-# print(accuracy_score(y_test,result_knn))
-# print(precision_score(y_test,result_knn))
-# print(recall_score(y_test,result_knn))
+knn_grid = KNeighborsClassifier()
+params_knn = {"n_neighbors":[16],
+#              "algorithm":['auto', 'ball_tree','kd_tree', 'brute'],
+ #             "metric":['euclidean', 'manhattan', 'minkowski', 'chebyshev']
+              "p": [2]
+              }
+print(y_test)
+best_model = grid_search_model(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn, fit_params=None, score="f1", folds=2)
+best_knn_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
+result_knn = predict_general_model_results(best_knn_model,x_test=X_test)
+#confusion_matrix_report(y_test,result_knn)
+print(result_knn)
+#print(accuracy_score(y_test,y_test))
+#print(precision_score(y_test,result_knn))
+#print(recall_score(y_test,result_knn))
+#print(f1_score(y_test,result_knn))
 
 ## test KNN
 #params_knn = {'n_neighbors':3, 'weights' : "uniform", 'algorithm':"auto", 'leaf_size':30, 'p':2, 'metric':"minkowski", 'metric_params':None, 'n_jobs':None}
