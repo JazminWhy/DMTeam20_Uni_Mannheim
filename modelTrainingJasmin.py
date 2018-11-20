@@ -4,14 +4,17 @@ from sklearn import tree
 from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score
 from sklearn.model_selection import StratifiedKFold, KFold
 from sklearn.model_selection import StratifiedKFold
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import GaussianNB, ComplementNB, BernoulliNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.datasets import load_iris
+from sklearn.neural_network import MLPClassifier
 from skrules import SkopeRules
 from sklearn.metrics import precision_recall_curve
 from matplotlib import pyplot as plt
 from sklearn import svm
+from sklearn.neural_network import MLPClassifier
+from sklearn.linear_model import LogisticRegression
 # implements NaiveBayes, KNN, NearestCentroid, DecisionTree, GeneralModel
 
 def train_naive_bayes(params, fit_params,x_train, y_train, n_folds, random_state, stratified = True, i=0, shuffle = True):
@@ -320,8 +323,8 @@ def train_svm(params, fit_params,x_train, y_train, n_folds, random_state, strati
     else:
         kf = KFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
 
+    #sv_model = svm.OneClassSVM(**params)
     sv_model = svm.SVC(**params)
-
     # Model Training
     for (train_index, test_index) in kf.split(x_train, y_train):
         # cross-validation randomly splits train data into train and validation data
@@ -353,7 +356,220 @@ def train_svm(params, fit_params,x_train, y_train, n_folds, random_state, strati
         print(' eval-Precision: %.6f' % eval_pp)
         print(' eval-Recall: %.6f' % eval_re)
 
+        # precision, recall, _ = precision_recall_curve(y_train_cv, scores_cv)
+        # plt.plot(recall, precision)
+        # plt.xlabel('Recall')
+        # plt.ylabel('Precision')
+        # plt.title('Precision Recall curve')
+        # plt.show()
         i = i + 1
 
     # return model for evaluation and prediction
     return sv_model
+
+
+def train_multilayerperceptron(params, fit_params,x_train, y_train, n_folds, random_state, stratified = True, i=0, shuffle = True):
+    # Model and hyperparameter selection
+    if stratified:
+        kf = StratifiedKFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+    else:
+        kf = KFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+
+    #sv_model = svm.OneClassSVM(**params)
+    mlp_model = MLPClassifier(**params)
+    # Model Training
+    for (train_index, test_index) in kf.split(x_train, y_train):
+        # cross-validation randomly splits train data into train and validation data
+        print('\n Fold %d' % (i + 1))
+
+        x_train_cv, x_val_cv = x_train.iloc[train_index], x_train.iloc[test_index]
+        y_train_cv, y_val_cv = y_train.iloc[train_index], y_train.iloc[test_index]
+
+        # declare your model
+        mlp_model.fit(x_train_cv, y_train_cv )#, fit_params, eval_set=[(x_train_cv, y_train_cv), (x_val_cv, y_val_cv)])
+
+        # predict train and validation set accuracy and get eval metrics
+        scores_cv = mlp_model.predict(x_train_cv)
+        scores_val = mlp_model.predict(x_val_cv)
+
+        # training evaluation
+
+        train_pc = accuracy_score(y_train_cv, scores_cv)
+        train_pp = precision_score(y_train_cv, scores_cv)
+        train_re = recall_score(y_train_cv, scores_cv)
+        print('\n train-Accuracy: %.6f' % train_pc)
+        print(' train-Precision: %.6f' % train_pp)
+        print(' train-Recall: %.6f' % train_re)
+
+        eval_pc = accuracy_score(y_val_cv,scores_val)
+        eval_pp = precision_score(y_val_cv,scores_val)
+        eval_re = recall_score(y_val_cv,scores_val)
+        print('\n eval-Accuracy: %.6f' % eval_pc)
+        print(' eval-Precision: %.6f' % eval_pp)
+        print(' eval-Recall: %.6f' % eval_re)
+
+        # precision, recall, _ = precision_recall_curve(y_train_cv, scores_cv)
+        # plt.plot(recall, precision)
+        # plt.xlabel('Recall')
+        # plt.ylabel('Precision')
+        # plt.title('Precision Recall curve')
+        # plt.show()
+        i = i + 1
+
+    # return model for evaluation and prediction
+    return mlp_model
+
+def train_logistic(params, fit_params,x_train, y_train, n_folds, random_state, stratified = True, i=0, shuffle = True):
+    # Model and hyperparameter selection
+    if stratified:
+        kf = StratifiedKFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+    else:
+        kf = KFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+
+    #sv_model = svm.OneClassSVM(**params)
+    log_model = LogisticRegression(**params)
+    # Model Training
+    for (train_index, test_index) in kf.split(x_train, y_train):
+        # cross-validation randomly splits train data into train and validation data
+        print('\n Fold %d' % (i + 1))
+
+        x_train_cv, x_val_cv = x_train.iloc[train_index], x_train.iloc[test_index]
+        y_train_cv, y_val_cv = y_train.iloc[train_index], y_train.iloc[test_index]
+
+        # declare your model
+        log_model.fit(x_train_cv, y_train_cv )#, fit_params, eval_set=[(x_train_cv, y_train_cv), (x_val_cv, y_val_cv)])
+
+        # predict train and validation set accuracy and get eval metrics
+        scores_cv = log_model.predict(x_train_cv)
+        scores_val = log_model.predict(x_val_cv)
+
+        # training evaluation
+
+        train_pc = accuracy_score(y_train_cv, scores_cv)
+        train_pp = precision_score(y_train_cv, scores_cv)
+        train_re = recall_score(y_train_cv, scores_cv)
+        print('\n train-Accuracy: %.6f' % train_pc)
+        print(' train-Precision: %.6f' % train_pp)
+        print(' train-Recall: %.6f' % train_re)
+
+        eval_pc = accuracy_score(y_val_cv,scores_val)
+        eval_pp = precision_score(y_val_cv,scores_val)
+        eval_re = recall_score(y_val_cv,scores_val)
+        print('\n eval-Accuracy: %.6f' % eval_pc)
+        print(' eval-Precision: %.6f' % eval_pp)
+        print(' eval-Recall: %.6f' % eval_re)
+
+        # precision, recall, _ = precision_recall_curve(y_train_cv, scores_cv)
+        # plt.plot(recall, precision)
+        # plt.xlabel('Recall')
+        # plt.ylabel('Precision')
+        # plt.title('Precision Recall curve')
+        # plt.show()
+        i = i + 1
+
+    # return model for evaluation and prediction
+    return log_model
+
+#Complement NB, especially suited for imbalanced Datasets
+def train_complement_naiveBayes(params, fit_params,x_train, y_train, n_folds, random_state, stratified = True, i=0, shuffle = True):
+    # Model and hyperparameter selection
+    if stratified:
+        kf = StratifiedKFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+    else:
+        kf = KFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+
+    #sv_model = svm.OneClassSVM(**params)
+    cnb_model = ComplementNB(**params)
+    # Model Training
+    for (train_index, test_index) in kf.split(x_train, y_train):
+        # cross-validation randomly splits train data into train and validation data
+        print('\n Fold %d' % (i + 1))
+
+        x_train_cv, x_val_cv = x_train.iloc[train_index], x_train.iloc[test_index]
+        y_train_cv, y_val_cv = y_train.iloc[train_index], y_train.iloc[test_index]
+
+        # declare your model
+        cnb_model.fit(x_train_cv, y_train_cv )#, fit_params, eval_set=[(x_train_cv, y_train_cv), (x_val_cv, y_val_cv)])
+
+        # predict train and validation set accuracy and get eval metrics
+        scores_cv = cnb_model.predict(x_train_cv)
+        scores_val = cnb_model.predict(x_val_cv)
+
+        # training evaluation
+
+        train_pc = accuracy_score(y_train_cv, scores_cv)
+        train_pp = precision_score(y_train_cv, scores_cv)
+        train_re = recall_score(y_train_cv, scores_cv)
+        print('\n train-Accuracy: %.6f' % train_pc)
+        print(' train-Precision: %.6f' % train_pp)
+        print(' train-Recall: %.6f' % train_re)
+
+        eval_pc = accuracy_score(y_val_cv,scores_val)
+        eval_pp = precision_score(y_val_cv,scores_val)
+        eval_re = recall_score(y_val_cv,scores_val)
+        print('\n eval-Accuracy: %.6f' % eval_pc)
+        print(' eval-Precision: %.6f' % eval_pp)
+        print(' eval-Recall: %.6f' % eval_re)
+
+        # precision, recall, _ = precision_recall_curve(y_train_cv, scores_cv)
+        # plt.plot(recall, precision)
+        # plt.xlabel('Recall')
+        # plt.ylabel('Precision')
+        # plt.title('Precision Recall curve')
+        # plt.show()
+        i = i + 1
+
+    # return model for evaluation and prediction
+    return cnb_model
+
+
+def train_Bernoulli_NaiveBayes(params, fit_params,x_train, y_train, n_folds, random_state, stratified = True, i=0, shuffle = True):
+    # Model and hyperparameter selection
+    if stratified:
+        kf = StratifiedKFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+    else:
+        kf = KFold(n_splits=n_folds, random_state=random_state, shuffle=shuffle)
+
+    #sv_model = svm.OneClassSVM(**params)
+    bnb_model = BernoulliNB(**params)
+    # Model Training
+    for (train_index, test_index) in kf.split(x_train, y_train):
+        # cross-validation randomly splits train data into train and validation data
+        print('\n Fold %d' % (i + 1))
+
+        x_train_cv, x_val_cv = x_train.iloc[train_index], x_train.iloc[test_index]
+        y_train_cv, y_val_cv = y_train.iloc[train_index], y_train.iloc[test_index]
+
+        # declare your model
+        bnb_model.fit(x_train_cv, y_train_cv )#, fit_params, eval_set=[(x_train_cv, y_train_cv), (x_val_cv, y_val_cv)])
+
+        # predict train and validation set accuracy and get eval metrics
+        scores_cv = bnb_model.predict(x_train_cv)
+        scores_val = bnb_model.predict(x_val_cv)
+
+        # training evaluation
+
+        train_pc = accuracy_score(y_train_cv, scores_cv)
+        train_pp = precision_score(y_train_cv, scores_cv)
+        train_re = recall_score(y_train_cv, scores_cv)
+        print('\n train-Accuracy: %.6f' % train_pc)
+        print(' train-Precision: %.6f' % train_pp)
+        print(' train-Recall: %.6f' % train_re)
+
+        eval_pc = accuracy_score(y_val_cv,scores_val)
+        eval_pp = precision_score(y_val_cv,scores_val)
+        eval_re = recall_score(y_val_cv,scores_val)
+        print('\n eval-Accuracy: %.6f' % eval_pc)
+        print(' eval-Precision: %.6f' % eval_pp)
+        print(' eval-Recall: %.6f' % eval_re)
+
+        # precision, recall, _ = precision_recall_curve(y_train_cv, scores_cv)
+        # plt.plot(recall, precision)
+        # plt.xlabel('Recall')
+        # plt.ylabel('Precision')
+        # plt.title('Precision Recall curve')
+        # plt.show()
+        i = i + 1
+
+    # return model for evaluation and prediction
+    return bnb_model
