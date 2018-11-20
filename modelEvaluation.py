@@ -55,11 +55,6 @@ def cv_accuracy(model, features, target):
     print("Maximum accuracy: " + max_accuracy)
     print("Average accuracy: " + avg_accuracy)
 
-
-def classification_report(y_true, y_pred):
-    print(classification_report(y_true, y_pred))
-
-
 # Print a classification report based on a cross validation
 def classification_report_cv(model, features, target):
     cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
