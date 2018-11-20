@@ -123,6 +123,7 @@ def grid_search_model(model, features, target, positive_label, parameters, fit_p
         model_scorer = make_scorer(f1_score, pos_label=positive_label)
         scoring = score
     elif score == "roc_auc":
+        model_scorer = "roc_auc"
         scoring = "roc_auc"
     else:
         model_scorer = make_scorer(accuracy_score)

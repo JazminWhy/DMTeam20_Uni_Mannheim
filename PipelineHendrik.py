@@ -135,7 +135,7 @@ print("done")
 
 best_model = grid_search_model(model=knn, features=X_train, target=y_train, positive_label=1, parameters=params_knn,
                                fit_params=None, score="recall", folds=5)
-result_knn = general_training(best_model, data=X_train, target=y_train, test=X_test)
+result_knn = train_general_model_results(best_model, data=X_train, target=y_train, test=X_test)
 confusion_matrix_report(y_test, result_knn)
 
 lgbm_params_1 = {
