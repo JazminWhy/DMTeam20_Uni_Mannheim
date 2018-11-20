@@ -239,6 +239,7 @@ lgbm_params_1 = {
 #params_dt = {'criterion':'gini', 'splitter':'best', 'max_depth':None, 'min_samples_split':2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0.0, 'max_features':None, 'random_state':None, 'max_leaf_nodes':None, 'min_impurity_decrease':0.0, 'min_impurity_split':None, 'class_weight':None, 'presort':False}
 #dt_model = train_decision_tree(params_dt, fit_params=None, x_train=X_train, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)
 
+
 ################ GRID SEARCH Dtree
 dtree_grid = tree.DecisionTreeClassifier()
 params_dtree = {'criterion':['gini', 'entropy'],
