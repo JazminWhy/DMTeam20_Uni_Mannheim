@@ -10,6 +10,8 @@ import modelTrainingMarius as modelTraining
 from modelEvaluation import *
 from modelTrainingJasmin import *
 from dataPreProcessing_Soumya import *
+from sklearn.metrics import mean_absolute_error, accuracy_score, average_precision_score, recall_score, confusion_matrix
+from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
 ### Data Loading #####
 
 #Print all rows and columns. Dont hide any.
@@ -26,20 +28,13 @@ check_missing_values(bankingcalldata)
 print('Full dataset shape: ')
 print(bankingcalldata.shape)
 
-from sklearn.metrics import mean_absolute_error, accuracy_score, average_precision_score, recall_score, confusion_matrix
-from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
-
-
 X_full = bankingcalldata.drop('y', axis=1)
 y_full = bankingcalldata['y']
 y_full.replace(('yes', 'no'), (1, 0), inplace=True)
-#y_test.replace(('yes', 'no'), (1, 0), inplace=True)
 
 cols = X_full.columns
 num_cols = X_full._get_numeric_data().columns
-
 columns_to_onehot = list(set(cols) - set(num_cols))
-
 X_preprocessed = data_preprocessing(data_set=X_full,
                                                              columns_to_drop=[],
                                                              columns_to_onehot=columns_to_onehot,
@@ -48,9 +43,11 @@ X_preprocessed = data_preprocessing(data_set=X_full,
                                                              normalise=True)
 
 # Train test split
-X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.20, random_state=42, stratify=y_full)
+X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.40, random_state=42, stratify=y_full)
 # Balancing
 X_train, y_train = data_balancing(X_train=X_train, y_train=y_train)
+
+print(y_test.value_counts())
 
 print('shapes')
 print(X_train.shape)
@@ -278,12 +275,8 @@ print(precision_score(y_test,result_dtree))
 print(recall_score(y_test,result_dtree))
 print(f1_score(y_test,result_dtree))
 print(profit_score_function_unbalanced(y_test,result_dtree))
+profit_matrix(y_test,result_dtree, 990, -10)
 
-result_dtree2 = predict_general_model_results(best_dtree_model,x_test=X_train)
-print('Test')
-profit_matrix(y_train, result_dtree2, 990, -90)
-print(confusion_matrix(y_train, result_dtree2))
-confusion_matrix_report(y_train, result_dtree2)
 """
 ################ GRID SEARCH NEAREST CENTROID
 nc_grid = NearestCentroid()
