@@ -24,6 +24,9 @@ bankingcalldata = pd.read_csv('C:/Users/hroed/PycharmProjects/DMTeam20_Uni_Mannh
 #C:\Users\jawei\PycharmProjects\DMTeam20_Uni_Mannheim\input
 #### This is just for the model guys to train test their models #######
 
+# Check missing values
+dataPreProcessing_Soumya.check_missing_values(bankingcalldata)
+
 print('Full dataset shape: ')
 print(bankingcalldata.shape)
 
@@ -35,7 +38,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
 
 import itertools
-
+"""
 if bankingcalldata.isnull().values.any() == True:
     print('There are missing values in the dataset.')
 else:
@@ -52,13 +55,13 @@ labels = []
 to_be_encoded = ['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month', 'day_of_week',
                  'previous','poutcome']
 
-"""
+
 print('Encoding categorical columns..')
 for i in bankingcalldata.columns.values:
     if bankingcalldata[i].dtype == object:
         lbl = preprocessing.LabelEncoder()
         bankingcalldata[i] = lbl.fit_transform(bankingcalldata[i])
-"""
+
 for i in range(len(to_be_encoded)):
     labels.append(list(bankingcalldata[to_be_encoded[i]].unique()))
 
@@ -77,6 +80,8 @@ else:
     print('Not all columns are encoded')
 
 print('Finished.')
+"""
+
 X_full = bankingcalldata.drop('y', axis=1)
 y_full = bankingcalldata['y']
 
@@ -107,7 +112,7 @@ if balance==True:
     train_x_balance_0 = train_full_balance[y_train["y"]== "no"]
     #print(train_x_balance_0.shape)
     #print("Y_1 count ")
-    train_x_balance.head()
+    #train_x_balance.head()
     count_pos = train_x_balance.shape[0]
     train_xy_balance_0 = train_x_balance_0.assign(y=0)
     train_xy_balance = train_x_balance.assign(y=1)
@@ -254,7 +259,8 @@ lgbm_params_1 = {
 #     'tol':0.001, 'verbose':True}
 # svm_model = train_svm(params_svm, fit_params=None, x_train=X_train, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)
 # result_svm= predict_general_model_results(svm_model,x_test=X_test)
-# confusion_matrix_report(y_test,result_svm)
+# confusion_matrix_report
+# (y_test,result_svm)
 # print(accuracy_score(y_test,result_svm))
 # print(precision_score(y_test,result_svm))
 # print(recall_score(y_test,result_svm))
@@ -309,16 +315,54 @@ params_knn = {"n_neighbors":[16],
  #             "metric":['euclidean', 'manhattan', 'minkowski', 'chebyshev']
               "p": [2]
               }
-print(y_test)
+"""
 best_model = grid_search_model(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn, fit_params=None, score="f1", folds=2)
 best_knn_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
 result_knn = predict_general_model_results(best_knn_model,x_test=X_test)
-#confusion_matrix_report(y_test,result_knn)
-print(result_knn)
-#print(accuracy_score(y_test,y_test))
-#print(precision_score(y_test,result_knn))
-#print(recall_score(y_test,result_knn))
-#print(f1_score(y_test,result_knn))
+confusion_matrix_report(y_test,result_knn)
+print(accuracy_score(y_test,result_knn))
+print(precision_score(y_test,result_knn))
+print(recall_score(y_test,result_knn))
+print(f1_score(y_test,result_knn))
+"""
+################ GRID SEARCH DTREE
+"""
+dtree_grid = tree.DecisionTreeClassifier()
+params_dtree = {'criterion':['gini', 'entropy'],
+                'splitter':['best'],
+                'max_depth':[2, 3, 4, 5, 6, 7, None],
+                'min_samples_split':[2, 3, 4, 5],
+                'min_samples_leaf':[18, 19, 20, 21, 22],
+                'min_weight_fraction_leaf':[0.0, 0.1, 0.2],
+                #'max_features':None,
+                #'random_state':None,
+                #'max_leaf_nodes':None,
+                'min_impurity_decrease':[0.0],
+                #'min_impurity_split':None,
+                #'class_weight':None,
+                #'presort':False
+                }
+
+best_model = grid_search_model(model=dtree_grid, features=X_train, target=y_train, positive_label=1, parameters=params_dtree, fit_params=None, score="f1", folds=2)
+best_dtree_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
+result_dtree = predict_general_model_results(best_dtree_model,x_test=X_test)
+confusion_matrix_report(y_test,result_dtree)
+print(accuracy_score(y_test,result_dtree))
+print(precision_score(y_test,result_dtree))
+print(recall_score(y_test,result_dtree))
+print(f1_score(y_test,result_dtree))
+"""
+################ GRID SEARCH NEAREST CENTROID
+nc_grid = NearestCentroid()
+params_cnn ={"metric":['euclidean', 'manhattan']}
+best_model = grid_search_model(model=nc_grid, features=X_train, target=y_train, positive_label=1, parameters=params_cnn, fit_params=None, score="f1", folds=10)
+best_cnn_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
+result_cnn = predict_general_model_results(best_cnn_model,x_test=X_test)
+confusion_matrix_report(y_test,result_cnn)
+print(accuracy_score(y_test,result_cnn))
+print(precision_score(y_test,result_cnn))
+print(recall_score(y_test,result_cnn))
+print(f1_score(y_test,result_cnn))
 
 ## test KNN
 #params_knn = {'n_neighbors':3, 'weights' : "uniform", 'algorithm':"auto", 'leaf_size':30, 'p':2, 'metric':"minkowski", 'metric_params':None, 'n_jobs':None}
@@ -388,18 +432,6 @@ print(result_knn)
 # print(accuracy_score(y_test,result_bnb))
 # print(precision_score(y_test,result_bnb))
 # print(recall_score(y_test,result_bnb))
-
-
-################ GRID SEARCH NEAREST CENTROID
-# nc_grid = NearestCentroid()
-# params_cnn ={"metric":['euclidean', 'manhattan', 'minkowski', 'chebyshev', 'seuclidean', 'mahalanobis']}#, 'kd_tree', 'brute']}
-# best_model = grid_search_model(model=nc_grid, features=X_train, target=y_train, positive_label=1, parameters=params_cnn, fit_params=None, score="roc_auc", folds=10)
-# best_cnn_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
-# result_cnn = predict_general_model_results(best_cnn_model,x_test=X_test)
-# confusion_matrix_report(y_test,result_cnn)
-# print(accuracy_score(y_test,result_cnn))
-# print(precision_score(y_test,result_cnn))
-# print(recall_score(y_test,result_cnn))
 
 ## Test Nearest Centroid
 #params_nearest_centroid = {'metric':'manhattan'}
