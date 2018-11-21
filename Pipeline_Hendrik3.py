@@ -9,7 +9,7 @@ import pandas as pd
 import modelTrainingMarius as modelTraining
 from modelEvaluation import *
 from modelTrainingJasmin import *
-import dataPreProcessing_Soumya
+from dataPreProcessing_Soumya import *
 ### Data Loading #####
 
 #Print all rows and columns. Dont hide any.
@@ -21,7 +21,7 @@ bankingcalldata = pd.read_csv('C:/Users/hroed/PycharmProjects/DMTeam20_Uni_Mannh
 #### This is just for the model guys to train test their models #######
 
 # Check missing values
-dataPreProcessing_Soumya.check_missing_values(bankingcalldata)
+check_missing_values(bankingcalldata)
 
 print('Full dataset shape: ')
 print(bankingcalldata.shape)
@@ -32,18 +32,25 @@ from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
 
 X_full = bankingcalldata.drop('y', axis=1)
 y_full = bankingcalldata['y']
+y_full.replace(('yes', 'no'), (1, 0), inplace=True)
+#y_test.replace(('yes', 'no'), (1, 0), inplace=True)
 
 cols = X_full.columns
 num_cols = X_full._get_numeric_data().columns
 
 columns_to_onehot = list(set(cols) - set(num_cols))
 
-X_preprocessed = dataPreProcessing_Soumya.data_preprocessing(X_full, list(X_full), columns_to_onehot=columns_to_onehot,
-                                                             columns_to_label=None, columns_to_dummy=None,  normalise=True)
+X_preprocessed = data_preprocessing(data_set=X_full,
+                                                             columns_to_drop=[],
+                                                             columns_to_onehot=columns_to_onehot,
+                                                             columns_to_dummy=[],
+                                                             columns_to_label=[],
+                                                             normalise=True)
 
+# Train test split
 X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.20, random_state=42, stratify=y_full)
-y_train.replace(('yes', 'no'), (1, 0), inplace=True)
-y_test.replace(('yes', 'no'), (1, 0), inplace=True)
+# Balancing
+X_train, y_train = data_balancing(X_train=X_train, y_train=y_train)
 
 print('shapes')
 print(X_train.shape)
@@ -53,28 +60,7 @@ print(y_test.shape)
 #print(X_train.head())
 print(y_full.value_counts())
 print(y_train.value_counts())
-balance = True
-if balance==True:
-    y_train = pd.DataFrame(data=y_train)
-    train_full_balance= pd.DataFrame(data=X_train)
-    train_x_balance = train_full_balance[y_train["y"]== 1]
-    train_x_balance_0 = train_full_balance[y_train["y"]== 1]
-    count_pos = train_x_balance.shape[0]
-    train_xy_balance_0 = train_x_balance_0.assign(y=0)
-    train_xy_balance = train_x_balance.assign(y=1)
-    train_xy_balance_0_sample=train_xy_balance_0.sample(n=count_pos, replace=False, random_state=42)
-    train_full_balance = train_xy_balance.append(train_xy_balance_0_sample)
-    X_train = train_full_balance.drop(['y'], axis=1)
-    y_train = train_full_balance['y']
 
-#print('X_train')
-#print(X_train.shape)
-#print('X_test')
-#print(X_test.shape)
-#print('y_train')
-#print(y_train.shape)
-#print('y_test')
-#print(y_test.shape)
 ################################
 
 """
