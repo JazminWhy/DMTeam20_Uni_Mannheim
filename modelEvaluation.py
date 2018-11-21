@@ -23,6 +23,12 @@ from sklearn.utils.multiclass import unique_labels
 # Set value for k in cross validations
 k = 10
 
+# Set the values for profit calculation
+profit_customer = 1000 # Exclusing the cost of a call!
+cost_call = 10 # State a positive value1
+
+profit_tp = profit_customer - cost_call # Currently 990
+profit_fp = -cost_call # Currently -10
 
 # Confusion Matrix Report for prediction results (from Exercise 3)
 def confusion_matrix_report(y_true, y_pred):
@@ -143,8 +149,13 @@ def grid_search_model(model, features, target, positive_label, parameters, fit_p
 def cost_matrix(y_true, y_pred, cost_fp, cost_fn):
     cm = confusion_matrix(y_true, y_pred)
     cost = cm[0][1] * cost_fp + cm[1][0] * cost_fn
-    print('Total cost of the model: ' + cost)
+    print('Total cost of the model: ' + str(cost))
 
+def profit_matrix(y_true, y_pred, profit_tp, profit_fp):
+    cm = confusion_matrix(y_true, y_pred)
+    profit = cm[1][1] * profit_tp + cm[0][1] * profit_fp
+    print('Total profit of the model: ' + str(profit))
+    print(cm)
 
 # Calculate roc_avg (from exercise 4)
 def get_roc(model, features, target, positive_label):
@@ -174,5 +185,74 @@ def get_roc(model, features, target, positive_label):
     std_auc = np.std(aucs)
 
     return mean_fpr, mean_tpr, mean_auc, std_auc
+
+
+def grid_search_cost_model_balanced(model, features, target, parameters, fit_params, folds):
+    k = folds
+    model_scorer = make_scorer(profit_score_function_balanced, greater_is_better=True)
+    print('grid search started with ' + str(k) + ' folds')
+    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
+    grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
+                                         cv=cross_validation, fit_params=fit_params, verbose=2)
+    grid_search_estimator.fit(features, target)
+
+    results = grid_search_estimator.cv_results_
+    for i in range(len(results['params'])):
+        print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
+
+    print("best profit is {} with params {} ".format(grid_search_estimator.best_score_,
+                                                      grid_search_estimator.best_params_))
+
+    return grid_search_estimator.best_estimator_
+
+
+def grid_search_cost_model_unbalanced(model, features, target, parameters, fit_params, folds):
+    k = folds
+    model_scorer = make_scorer(profit_score_function_unbalanced, greater_is_better=True)
+    print('grid search started with ' + str(k) + ' folds')
+    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
+    grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
+                                         cv=cross_validation, fit_params=fit_params, verbose=2)
+    grid_search_estimator.fit(features, target)
+
+    results = grid_search_estimator.cv_results_
+    for i in range(len(results['params'])):
+        print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
+
+    print("best profit is {} with params {} ".format(grid_search_estimator.best_score_,
+                                                      grid_search_estimator.best_params_))
+
+    return grid_search_estimator.best_estimator_
+
+
+def profit_score_function_balanced(y_true, y_predicted):
+    score = 0
+    for i, v in enumerate(y_true, 1):
+        if y_predicted[i-1] == 1 and v == 1: # TP
+            score_i = profit_tp*1
+        if y_predicted[i-1] == 1 and v == 0: # FP (Called, but no subscription)
+            score_i = profit_fp*9 # times 9 to revert the balancing
+        if y_predicted[i-1] == 0 and v == 1: # FN (Missed, but would have subscribed)
+            score_i = 0*1 # Otherwise it's redundant
+        if y_predicted[i-1] == 0 and v == 0:
+            score_i = 0*9 # Otherwise it's redundant
+        score += score_i
+    return score
+
+
+def profit_score_function_unbalanced(y_true, y_predicted):
+    score = 0
+    for i, v in enumerate(y_true, 1):
+        if y_predicted[i-1] == 1 and v == 1: # TP
+            score_i = profit_tp
+        if y_predicted[i-1] == 1 and v == 0: # FP (Called, but no subscription)
+            score_i = profit_fp # profit_fp is negative!
+        if y_predicted[i-1] == 0 and v == 1: # FN (Missed, but would have subscribed)
+            score_i = 0 # Otherwise it's redundant
+        if y_predicted[i-1] == 0 and v == 0:
+            score_i = 0 # Otherwise it's redundant
+        score += score_i
+    return score
+
 
 
