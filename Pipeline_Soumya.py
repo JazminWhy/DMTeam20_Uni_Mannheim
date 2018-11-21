@@ -7,7 +7,7 @@ from sklearn.neighbors import KNeighborsClassifier
 warnings.filterwarnings('ignore')
 
 import pandas as pd
-import modelTrainingMarius as modelTraining
+# import modelTrainingMarius as modelTraining
 import modelEvaluation
 import xgboost as xgb
 from modelEvaluation import *
@@ -39,17 +39,18 @@ import itertools
 check_missing_values(bankingcalldata)
 
 #
-to_be_preprocessed = ['age','duration','campaign','pdays','emp.var.rate','cons.price.idx','job','marital','education','default','housing','loan','contact','month','day_of_week','previous',
-                 'poutcome']
-
+to_be_preprocessed = ['age','duration','campaign','pdays','emp.var.rate','cons.price.idx','job','marital','education','default','housing','loan','contact','month','day_of_week','previous']
+to_be_dropped = ['poutcome']
 binned_age = bin_age(bankingcalldata)
 bankingcalldata['age'] = binned_age.astype('object')
 binned_duration = bin_duration(bankingcalldata)
 bankingcalldata['duration'] = binned_duration.astype('object')
+print("Data before preprocessing")
 print(bankingcalldata.head())
 
-data_preprocessed = data_preprocessing(bankingcalldata, to_be_preprocessed, True)
-
+data_preprocessed = data_preprocessing(bankingcalldata, to_be_preprocessed, to_be_dropped, True)
+print("Preprocessed data")
+print(bankingcalldata.head())
 # X_full = bankingcalldata.drop('y', axis=1)
 X_full = data_preprocessed
 y_full = bankingcalldata['y']
@@ -66,26 +67,35 @@ balance = False
 if balance==True:
     #### END ####################### BALANCING data
     y_train = pd.DataFrame(data=y_train)
-    y_train_balance = y_train[y_train==1]
-    y_train_0 = y_train[y_train==0]
+    #y_train_balance = y_train[y_train==1]
+    #y_train_0 = y_train[y_train==0]
     train_full_balance= pd.DataFrame(data=X_train)
-    train_full_balance = train_full_balance.assign(y = y_train["y"])
-    train_full_balance.head()
-    train_x_balance = train_full_balance[train_full_balance["y"]== 1]
-    print(train_x_balance.shape)
-    train_x_balance_0 = train_full_balance[train_full_balance["y"]== 0]
-    print(train_x_balance_0.shape)
-    print("Y_1 count ")
-    count_pos = train_x_balance.count(axis="rows")["age"]
-    train_x_balance_0_sample=train_x_balance_0.sample(n=count_pos, replace=False, random_state=42) #random.sample(train_x_balance_0, count_pos)
-    print(train_x_balance_0_sample.shape)
-    train_full_balance = train_x_balance.append(train_x_balance_0_sample)
-    print(train_full_balance.shape)
-    X_train = train_full_balance.drop("y", axis=1)
-    print(X_train.shape)
-    y_train = train_full_balance["y"]
-    print(y_train.shape)
-################################
+    #train_full_balance = train_full_balance.assign(y = y_train["y"])
+    #train_full_balance.head()
+    #print('balances')
+    train_x_balance = train_full_balance[y_train["y"]== "yes"]
+    #print(train_x_balance.shape)
+    train_x_balance_0 = train_full_balance[y_train["y"]== "no"]
+    #print(train_x_balance_0.shape)
+    #print("Y_1 count ")
+    train_x_balance.head()
+    count_pos = train_x_balance.shape[0]
+    train_xy_balance_0 = train_x_balance_0.assign(y=0)
+    train_xy_balance = train_x_balance.assign(y=1)
+    train_xy_balance_0_sample=train_xy_balance_0.sample(n=count_pos, replace=False, random_state=42)
+    #print(train_xy_balance_0_sample.shape)
+    train_full_balance = train_xy_balance.append(train_xy_balance_0_sample)
+    #print(train_full_balance.head())
+    #print(train_full_balance.shape)
+    #print(train_full_balance['y'].value_counts())
+    X_train = train_full_balance.drop(['y'], axis=1)
+    #print(X_train.shape)
+    y_train = train_full_balance['y']
+    #print(y_train.shape)
+else:
+    y_train.replace(('yes', 'no'), (1, 0), inplace=True)
+
+y_test.replace(('yes', 'no'), (1, 0), inplace=True)
 """
 xgb_params_1 = {
         'learning_rate': 0.01,
@@ -215,6 +225,7 @@ lgbm_params_1 = {
 #dt_model = train_decision_tree(params_dt, fit_params=None, x_train=X_train, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)
 
 ################ GRID SEARCH Dtree
+""""
 dtree_grid = tree.DecisionTreeClassifier()
 params_dtree = {'criterion':['gini', 'entropy'],
                 'splitter':['best'],
@@ -232,15 +243,15 @@ params_dtree = {'criterion':['gini', 'entropy'],
                 }
 best_dtree = grid_search_model(model=dtree_grid, features=X_train, target=y_train, positive_label=1,
                                parameters=params_dtree, fit_params=None, score="roc_auc", folds=10)
-best_dtree_model = train_general_model(best_dtree, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None,
-                                     random_state=123, stratified=True, i=0, shuffle=True)
-result_dtree = predict_general_model_results(best_dtree_model, x_test=X_test)
+# best_dtree_model = train_general_model(best_dtree, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None,
+#                                    random_state=123, stratified=True, i=0, shuffle=True)
+result_dtree = predict_general_model_results(best_dtree, x_test=X_test)
 confusion_matrix_report(y_test,result_dtree)
-#print(accuracy_score(y_test,result_dtree))
+print(accuracy_score(y_test,result_dtree))
 print(precision_score(y_test,result_dtree))
 print(recall_score(y_test,result_dtree))
 print(f1_score(y_test,result_dtree))
-
+"""
 #best roc_auc is 0.9357937805579077 with params {'criterion': 'gini', 'max_depth': 8, 'min_impurity_decrease': 0.0, 'min_samples_leaf': 10, 'min_samples_split': 100, 'min_weight_fraction_leaf': 0.0, 'splitter': 'best'}
 #        _Prediction_
 #            0      1
