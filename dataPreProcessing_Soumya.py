@@ -25,7 +25,12 @@ def check_missing_values(data_set):
 
 
 def data_preprocessing(data_set, columns_to_drop, columns_to_onehot, columns_to_dummy, columns_to_label, normalise):
-    data_set_dropped_columns = data_set.drop(columns_to_drop, axis=1)
+    if len(columns_to_drop) != 0:
+        data_set_dropped_columns = data_set.drop(columns_to_drop, axis=1)
+    else:
+        data_set_dropped_columns = data_set
+    columns_needed = columns_to_onehot + columns_to_dummy + columns_to_label
+    data_left = data_set_dropped_columns.drop(columns_needed, axis=1)
 #    bank_data_new = data_set_dropped_columns[columns_to_preprocess]
     data_to_onehot_encode = data_set_dropped_columns[columns_to_onehot]
     data_to_dummy_encode = data_set_dropped_columns[columns_to_dummy]
@@ -52,6 +57,7 @@ def data_preprocessing(data_set, columns_to_drop, columns_to_onehot, columns_to_
     bank_data_onehotencoded = []
     bank_data_dummyencoded = []
     bank_data_labelencoded = []
+    bank_data_leftencoded = []
     if len(columns_to_onehot) != 0:
 #        bank_data_cat = bank_data_new.select_dtypes(include=['object'])
         # Get the columns with categorical values
@@ -73,6 +79,11 @@ def data_preprocessing(data_set, columns_to_drop, columns_to_onehot, columns_to_
         for i in data_to_label_encode.columns.values:
             lbl = preprocessing.LabelEncoder()
             data_to_label_encode[i] = lbl.fit_transform(data_to_label_encode[i])
+    if not data_left.empty:
+        bank_data_leftencoded = pd.get_dummies(data_left)
+        print(bank_data_leftencoded.shape)
+        print('Data left out is...')
+        print(bank_data_leftencoded.head())
 
     print(bank_data_onehotencoded.shape)
     print(bank_data_onehotencoded.head())
@@ -83,7 +94,7 @@ def data_preprocessing(data_set, columns_to_drop, columns_to_onehot, columns_to_
     print(bank_data_num_norm.shape)
     print(bank_data_num_norm.head())
 
-    bank_data_norm_encoded = np.concatenate((bank_data_onehotencoded, bank_data_dummyencoded,data_to_label_encode,bank_data_num_norm), axis=1)
+    bank_data_norm_encoded = np.concatenate((bank_data_onehotencoded, bank_data_dummyencoded,data_to_label_encode,bank_data_num_norm, bank_data_leftencoded), axis=1)
     bank_data_norm_encoded = pd.DataFrame(bank_data_norm_encoded)
     print('Data after pre-processing')
     print(bank_data_norm_encoded.head())
@@ -117,7 +128,7 @@ def bin_age(data_set):
     bins = [0, 17, 34, 60, 100]
     data_set['age'] = pd.cut(data_set['age'], bins, labels=['Child', 'Adult', 'Middle_aged', 'Old'])
 #    print(data_set['age'])
-    return data_set['age']
+    return data_set['age'].astype('object')
 
 
 def bin_duration(data_set):
@@ -125,7 +136,7 @@ def bin_duration(data_set):
     bins = [0, 5, 10, 90]
     data_set['duration'] = pd.cut(duration_in_min, bins, labels=['lessThan5min', '5minTo10min', 'moreThan10min'])
 #    print(data_set['duration'])
-    return data_set['duration']
+    return data_set['duration'].astype('object')
 
 
 def not_contacted(data_set):
@@ -147,22 +158,17 @@ print(pd.__version__)
 print(bank_data.head())
 to_be_preprocessed = ['age','duration','campaign','pdays','emp.var.rate','cons.price.idx','job','marital','education','default','housing','loan','contact','month','day_of_week','previous']
 columns_to_bin = ['age','duration','campaign','pdays','emp.var.rate','campaign']
-columns_to_drop = ['poutcome']
+columns_to_drop = []
 columns_to_onehot = ['marital', 'education', 'default', 'housing']
 columns_to_dummy = ['loan', 'contact', 'day_of_week']
-columns_to_label = ['job', 'month']
+columns_to_label = []
 check_missing_values(bank_data)
 
-binned_age = bin_age(bank_data)
-bank_data['age'] = binned_age.astype('object')
-binned_duration = bin_duration(bank_data)
-bank_data['duration'] = binned_duration.astype('object')
+bank_data['age'] = bin_age(bank_data)
+bank_data['duration'] = bin_duration(bank_data)
+bank_data = not_contacted(bank_data)
+bank_data = bin_pdays(bank_data)
 print(bank_data.head())
 
-#binned_data = data_binned(bank_data, columns_to_bin)
-#data_frame_binned = pd.DataFrame(binned_data)
-#print(data_frame_binned.head())
-#frames = [bank_data, data_frame_binned]
-#result_data = pd.concat(frames)
 data_preprocessed = data_preprocessing(bank_data, columns_to_drop, columns_to_onehot, columns_to_dummy, columns_to_label, True)
 
