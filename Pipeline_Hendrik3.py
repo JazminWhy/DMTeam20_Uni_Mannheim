@@ -1,5 +1,4 @@
 # Supress unnecessary warnings so that presentation looks clean
-import random
 import warnings
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -8,9 +7,6 @@ warnings.filterwarnings('ignore')
 
 import pandas as pd
 import modelTrainingMarius as modelTraining
-import modelEvaluation
-import xgboost as xgb
-from sklearn import svm
 from modelEvaluation import *
 from modelTrainingJasmin import *
 import dataPreProcessing_Soumya
@@ -30,64 +26,24 @@ dataPreProcessing_Soumya.check_missing_values(bankingcalldata)
 print('Full dataset shape: ')
 print(bankingcalldata.shape)
 
-from datetime import datetime
 from sklearn.metrics import mean_absolute_error, accuracy_score, average_precision_score, recall_score, confusion_matrix
-from scipy.stats import skew, boxcox
-from sklearn import preprocessing
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
 
-import itertools
-"""
-if bankingcalldata.isnull().values.any() == True:
-    print('There are missing values in the dataset.')
-else:
-    print('There are no missing values in the dataset.')
-
-columns = list(bankingcalldata.columns)
-
-for column in columns:
-    if bankingcalldata[column].isnull().values.any() == True:
-        print('There are missing values in the column ' + column)
-
-# Variable to hold the list of variables for an attribute in the train and test data
-labels = []
-to_be_encoded = ['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month', 'day_of_week',
-                 'previous','poutcome']
-
-
-print('Encoding categorical columns..')
-for i in bankingcalldata.columns.values:
-    if bankingcalldata[i].dtype == object:
-        lbl = preprocessing.LabelEncoder()
-        bankingcalldata[i] = lbl.fit_transform(bankingcalldata[i])
-
-for i in range(len(to_be_encoded)):
-    labels.append(list(bankingcalldata[to_be_encoded[i]].unique()))
-
-# One hot encode all categorical attributes
-cats = []
-encoded_data = bankingcalldata.drop('y', axis=1)
-
-print('Checking datatypes..')
-tmp = 0
-for i in bankingcalldata.columns.values:
-    if bankingcalldata[i].dtype == object:
-        tmp = tmp + 1
-if tmp == 0:
-    print('All columns are encoded.')
-else:
-    print('Not all columns are encoded')
-
-print('Finished.')
-"""
 
 X_full = bankingcalldata.drop('y', axis=1)
 y_full = bankingcalldata['y']
 
-X_preprocessed = dataPreProcessing_Soumya.data_preprocessing(X_full, list(X_full), ONE_HOT= True)
+cols = X_full.columns
+num_cols = X_full._get_numeric_data().columns
+
+columns_to_onehot = list(set(cols) - set(num_cols))
+
+X_preprocessed = dataPreProcessing_Soumya.data_preprocessing(X_full, list(X_full), columns_to_onehot=columns_to_onehot,
+                                                             columns_to_label=None, columns_to_dummy=None,  normalise=True)
 
 X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.20, random_state=42, stratify=y_full)
+y_train.replace(('yes', 'no'), (1, 0), inplace=True)
+y_test.replace(('yes', 'no'), (1, 0), inplace=True)
 
 print('shapes')
 print(X_train.shape)
@@ -99,39 +55,18 @@ print(y_full.value_counts())
 print(y_train.value_counts())
 balance = True
 if balance==True:
-    #### END ####################### BALANCING data
     y_train = pd.DataFrame(data=y_train)
-    #y_train_balance = y_train[y_train==1]
-    #y_train_0 = y_train[y_train==0]
     train_full_balance= pd.DataFrame(data=X_train)
-    #train_full_balance = train_full_balance.assign(y = y_train["y"])
-    #train_full_balance.head()
-    #print('balances')
-    train_x_balance = train_full_balance[y_train["y"]== "yes"]
-    #print(train_x_balance.shape)
-    train_x_balance_0 = train_full_balance[y_train["y"]== "no"]
-    #print(train_x_balance_0.shape)
-    #print("Y_1 count ")
-    #train_x_balance.head()
+    train_x_balance = train_full_balance[y_train["y"]== 1]
+    train_x_balance_0 = train_full_balance[y_train["y"]== 1]
     count_pos = train_x_balance.shape[0]
     train_xy_balance_0 = train_x_balance_0.assign(y=0)
     train_xy_balance = train_x_balance.assign(y=1)
     train_xy_balance_0_sample=train_xy_balance_0.sample(n=count_pos, replace=False, random_state=42)
-    #print(train_xy_balance_0_sample.shape)
     train_full_balance = train_xy_balance.append(train_xy_balance_0_sample)
-    #print(train_full_balance.head())
-    #print(train_full_balance.shape)
-    #print(train_full_balance['y'].value_counts())
     X_train = train_full_balance.drop(['y'], axis=1)
-    #print(X_train.shape)
     y_train = train_full_balance['y']
-    #print(y_train.shape)
-else:
-    y_train.replace(('yes', 'no'), (1, 0), inplace=True)
 
-y_test.replace(('yes', 'no'), (1, 0), inplace=True)
-print('x')
-print(X_train.head(20))
 #print('X_train')
 #print(X_train.shape)
 #print('X_test')
@@ -330,14 +265,14 @@ print(recall_score(y_test,result_knn))
 print(f1_score(y_test,result_knn))
 """
 ################ GRID SEARCH DTREE
-"""
+
 dtree_grid = tree.DecisionTreeClassifier()
 params_dtree = {'criterion':['gini', 'entropy'],
                 'splitter':['best'],
-                'max_depth':[2, 3, 4, 5, 6, 7, None],
+                'max_depth':[2, 3],
                 'min_samples_split':[2, 3, 4, 5],
-                'min_samples_leaf':[18, 19, 20, 21, 22],
-                'min_weight_fraction_leaf':[0.0, 0.1, 0.2],
+                'min_samples_leaf':[18],
+                'min_weight_fraction_leaf':[0.0],
                 #'max_features':None,
                 #'random_state':None,
                 #'max_leaf_nodes':None,
@@ -347,7 +282,8 @@ params_dtree = {'criterion':['gini', 'entropy'],
                 #'presort':False
                 }
 
-best_model = grid_search_model(model=dtree_grid, features=X_train, target=y_train, positive_label=1, parameters=params_dtree, fit_params=None, score="f1", folds=2)
+best_model = grid_search_cost_model_balanced(model=dtree_grid, features=X_train, target=y_train, parameters=params_dtree, folds=10, fit_params=None)
+#best_model = grid_search_model(model=dtree_grid, features=X_train, target=y_train, positive_label=1, parameters=params_dtree, fit_params=None, score="f1", folds=2)
 best_dtree_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
 result_dtree = predict_general_model_results(best_dtree_model,x_test=X_test)
 confusion_matrix_report(y_test,result_dtree)
@@ -355,6 +291,13 @@ print(accuracy_score(y_test,result_dtree))
 print(precision_score(y_test,result_dtree))
 print(recall_score(y_test,result_dtree))
 print(f1_score(y_test,result_dtree))
+print(profit_score_function_unbalanced(y_test,result_dtree))
+
+result_dtree2 = predict_general_model_results(best_dtree_model,x_test=X_train)
+print('Test')
+profit_matrix(y_train, result_dtree2, 990, -90)
+print(confusion_matrix(y_train, result_dtree2))
+confusion_matrix_report(y_train, result_dtree2)
 """
 ################ GRID SEARCH NEAREST CENTROID
 nc_grid = NearestCentroid()
@@ -367,7 +310,7 @@ print(accuracy_score(y_test,result_cnn))
 print(precision_score(y_test,result_cnn))
 print(recall_score(y_test,result_cnn))
 print(f1_score(y_test,result_cnn))
-
+"""
 ## test KNN
 #params_knn = {'n_neighbors':3, 'weights' : "uniform", 'algorithm':"auto", 'leaf_size':30, 'p':2, 'metric':"minkowski", 'metric_params':None, 'n_jobs':None}
 #knn_model = train_knn(params_knn, fit_params=None, x_train=X_train, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)

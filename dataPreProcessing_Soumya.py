@@ -152,8 +152,21 @@ def bin_pdays(data_set):
    data_set['pmonths'] = pd.cut(pmonths, bins, labels=['0To3months', '3To7months', 'moreThan7months'])
    return data_set
 
+def data_balancing(X_train, y_train):
+    y_train = pd.DataFrame(data=y_train)
+    train_full_balance= pd.DataFrame(data=X_train)
+    train_x_balance = train_full_balance[y_train["y"]== 1]
+    train_x_balance_0 = train_full_balance[y_train["y"]== 0]
+    count_pos = train_x_balance.shape[0]
+    train_xy_balance_0 = train_x_balance_0.assign(y=0)
+    train_xy_balance = train_x_balance.assign(y=1)
+    train_xy_balance_0_sample=train_xy_balance_0.sample(n=count_pos, replace=False, random_state=42)
+    train_full_balance = train_xy_balance.append(train_xy_balance_0_sample)
+    X_train = train_full_balance.drop(['y'], axis=1)
+    y_train = train_full_balance['y']
+    return X_train, y_train
 
-bank_data = pd.read_csv('/Users/soumya/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
+bank_data = pd.read_csv('/Users/Soumya/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
 print(pd.__version__)
 print(bank_data.head())
 to_be_preprocessed = ['age','duration','campaign','pdays','emp.var.rate','cons.price.idx','job','marital','education','default','housing','loan','contact','month','day_of_week','previous']
