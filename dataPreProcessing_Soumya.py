@@ -25,24 +25,26 @@ def check_missing_values(data_set):
 
 
 def data_preprocessing(data_set, columns_to_drop, columns_to_onehot, columns_to_dummy, columns_to_label, normalise):
+    # Drop the specified columns
     if len(columns_to_drop) != 0:
         data_set_dropped_columns = data_set.drop(columns_to_drop, axis=1)
     else:
         data_set_dropped_columns = data_set
-    columns_needed = columns_to_onehot + columns_to_dummy + columns_to_label
+
+    # Extact data set with numeric values
+    bank_data_num = data_set_dropped_columns.select_dtypes(include=[np.number])
+    # Get the columns with numeric(continuous) values
+    numeric_columns = list(bank_data_num.columns.values)
+    print(numeric_columns)
+
+    columns_needed = columns_to_onehot + columns_to_dummy + columns_to_label + numeric_columns
+    # Get the data set which is not specified
     data_left = data_set_dropped_columns.drop(columns_needed, axis=1)
-#    bank_data_new = data_set_dropped_columns[columns_to_preprocess]
+
+    # Get subsets of data according to encoder to be applied
     data_to_onehot_encode = data_set_dropped_columns[columns_to_onehot]
     data_to_dummy_encode = data_set_dropped_columns[columns_to_dummy]
     data_to_label_encode = data_set_dropped_columns[columns_to_label]
-    data_set.info(memory_usage='deep')
-    print(data_set.describe(include=[np.number]))
-
-    #Extact columns with numeric values
-    bank_data_num = data_set_dropped_columns.select_dtypes(include=[np.number])
-    #Get the columns with numeric(continuous) values
-    numeric_columns = list(bank_data_num.columns.values)
-    print(numeric_columns)
 
     #Normalising data using Min-Max scaling => [(x - min(x)) / (min(x) - max(x))]
     if normalise:
@@ -52,45 +54,48 @@ def data_preprocessing(data_set, columns_to_drop, columns_to_onehot, columns_to_
         bank_data_no_cols = pd.DataFrame(x_scaled, columns=numeric_columns, index=data_set.index)
         data_set[numeric_columns] = bank_data_no_cols
     bank_data_num_norm = data_set[numeric_columns]
-    # Encoding Categorical variables - Creating k dummy variables for an original variable k-categories
-#    bank_data_norm = bank_data_new
-    bank_data_onehotencoded = []
-    bank_data_dummyencoded = []
-    bank_data_labelencoded = []
-    bank_data_leftencoded = []
+
+    # One-hot encoding specified columns
     if len(columns_to_onehot) != 0:
-#        bank_data_cat = bank_data_new.select_dtypes(include=['object'])
-        # Get the columns with categorical values
-#        cat_columns = list(bank_data_cat.columns.values)
-#        print(cat_columns)
-#        to_be_encoded = cat_columns
         encoder = OneHotEncoder()
         bank_data_onehotencoded = encoder.fit_transform(data_to_onehot_encode)
+    else:
+        bank_data_onehotencoded = pd.DataFrame(np.zeros((data_set.shape[0], 1)))
 
-        # Concatenate encoded attributes with continuous attributes
-#        bank_data_numerical = bank_data_new.drop(columns_to_onehot, axis=1)
-#        bank_data_norm_encoded = np.concatenate((bank_data_encoded, bank_data_numerical), axis=1)
-#
-#        bank_data_norm_encoded = pd.DataFrame(bank_data_norm_encoded)
-        # print(bank_data_norm_encoded.head())
+    # Encoding Categorical variables - Creating k dummy variables for an original variable k-categories
     if len(columns_to_dummy) != 0:
         bank_data_dummyencoded = pd.get_dummies(data_to_dummy_encode)
+    else:
+        bank_data_dummyencoded = pd.DataFrame(np.zeros((data_set.shape[0], 1)))
+
+    # Label encoding specified columns
     if len(columns_to_label) != 0:
         for i in data_to_label_encode.columns.values:
             lbl = preprocessing.LabelEncoder()
             data_to_label_encode[i] = lbl.fit_transform(data_to_label_encode[i])
-    if not data_left.empty:
-        bank_data_leftencoded = pd.get_dummies(data_left)
-        print(bank_data_leftencoded.shape)
-        print('Data left out is...')
-        print(bank_data_leftencoded.head())
+    else:
+        data_to_label_encode = pd.DataFrame(np.zeros((data_set.shape[0], 1)))
 
+    # Dummy encode the unspecified data columns by default
+    if not data_left.empty:
+        print('in if not statement')
+        bank_data_leftencoded = pd.get_dummies(data_left)
+    else:
+        bank_data_leftencoded = pd.DataFrame(np.zeros((data_set.shape[0], 1)))
+
+    print('Data left out is...')
+    print(bank_data_leftencoded.shape)
+    print(bank_data_leftencoded.head())
+    print('Data one-hot encoded is...')
     print(bank_data_onehotencoded.shape)
     print(bank_data_onehotencoded.head())
+    print('Data dummy encoded is...')
     print(bank_data_dummyencoded.shape)
     print(bank_data_dummyencoded.head())
+    print('Data label encoded is...')
     print(data_to_label_encode.shape)
     print(data_to_label_encode.head())
+    print('Numerical Data normalised is...')
     print(bank_data_num_norm.shape)
     print(bank_data_num_norm.head())
 
@@ -112,18 +117,6 @@ def data_preprocessing(data_set, columns_to_drop, columns_to_onehot, columns_to_
     return bank_data_norm_encoded
 
 
-def data_binned(data_set, columns_to_bin):
-    bank_data_binned = []
-    for columns in columns_to_bin:
-        feature = pd.cut(data_set[columns], bins=4, labels=['one', 'two','three','four'])
-        bank_data_binned.append(feature)
-
-    binned_data_2d = np.column_stack(bank_data_binned)
-    print(binned_data_2d)
-    print(binned_data_2d.shape)
-    return binned_data_2d
-
-
 def bin_age(data_set):
     bins = [0, 17, 34, 60, 100]
     data_set['age'] = pd.cut(data_set['age'], bins, labels=['Child', 'Adult', 'Middle_aged', 'Old'])
@@ -140,17 +133,18 @@ def bin_duration(data_set):
 
 
 def not_contacted(data_set):
-   data_set['not_contacted'] = 0
-   data_set.loc[data_set['pdays'] == 999 ,'not_contacted'] = 1
-   return data_set
+    data_set['not_contacted'] = 0
+    data_set.loc[data_set['pdays'] == 999 ,'not_contacted'] = 1
+    return data_set
 
 
 def bin_pdays(data_set):
-   data_set.loc[data_set['pdays'] == 999 ,'pdays'] = 0
-   pmonths = data_set['pdays'] / 30
-   bins = [0, 3, 7, 1000]
-   data_set['pmonths'] = pd.cut(pmonths, bins, labels=['0To3months', '3To7months', 'moreThan7months'])
-   return data_set
+    data_set.loc[data_set['pdays'] == 999 ,'pdays'] = 0
+    pmonths = data_set['pdays'] / 30
+    bins = [0, 3, 7, 1000]
+    data_set['pmonths'] = pd.cut(pmonths, bins, labels=['0To3months', '3To7months', 'moreThan7months'])
+    data_set['pmonths'] = data_set['pmonths'].astype('object')
+    return data_set
 
 def data_balancing(X_train, y_train):
     y_train = pd.DataFrame(data=y_train)
@@ -167,13 +161,13 @@ def data_balancing(X_train, y_train):
     return X_train, y_train
 
 bank_data = pd.read_csv('/Users/Soumya/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
-print(pd.__version__)
-print(bank_data.head())
-to_be_preprocessed = ['age','duration','campaign','pdays','emp.var.rate','cons.price.idx','job','marital','education','default','housing','loan','contact','month','day_of_week','previous']
-columns_to_bin = ['age','duration','campaign','pdays','emp.var.rate','campaign']
-columns_to_drop = []
-columns_to_onehot = ['marital', 'education', 'default', 'housing']
-columns_to_dummy = ['loan', 'contact', 'day_of_week']
+# print(pd.__version__)
+# print(bank_data.head())
+# to_be_preprocessed = ['age','duration','campaign','pdays','emp.var.rate','cons.price.idx','job','marital','education','default','housing','loan','contact','month','day_of_week','previous']
+# columns_to_bin = ['age','duration','campaign','pdays','emp.var.rate','campaign']
+columns_to_drop = ['y']
+columns_to_onehot = ['age', 'pmonths', 'duration', 'month', 'marital', 'education', 'default', 'housing','poutcome','loan', 'contact', 'day_of_week']
+columns_to_dummy = []
 columns_to_label = []
 check_missing_values(bank_data)
 
@@ -184,4 +178,3 @@ bank_data = bin_pdays(bank_data)
 print(bank_data.head())
 
 data_preprocessed = data_preprocessing(bank_data, columns_to_drop, columns_to_onehot, columns_to_dummy, columns_to_label, True)
-
