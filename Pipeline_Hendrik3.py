@@ -97,7 +97,7 @@ print(y_test.shape)
 #print(X_train.head())
 print(y_full.value_counts())
 print(y_train.value_counts())
-balance = True
+balance = False
 if balance==True:
     #### END ####################### BALANCING data
     y_train = pd.DataFrame(data=y_train)
@@ -127,7 +127,9 @@ if balance==True:
     y_train = train_full_balance['y']
     #print(y_train.shape)
 
+
 y_test.replace(('yes', 'no'), (1, 0), inplace=True)
+y_train.replace(('yes', 'no'), (1, 0), inplace=True)
 #print('X_train')
 #print(X_train.shape)
 #print('X_test')
@@ -356,8 +358,8 @@ print(f1_score(y_test,result_dtree))
 nc_grid = NearestCentroid()
 params_cnn ={"metric":['euclidean', 'manhattan']}
 best_model = grid_search_model(model=nc_grid, features=X_train, target=y_train, positive_label=1, parameters=params_cnn, fit_params=None, score="f1", folds=10)
-best_cnn_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
-result_cnn = predict_general_model_results(best_cnn_model,x_test=X_test)
+#best_cnn_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
+result_cnn = predict_general_model_results(best_model,x_test=X_test)
 confusion_matrix_report(y_test,result_cnn)
 print(accuracy_score(y_test,result_cnn))
 print(precision_score(y_test,result_cnn))
