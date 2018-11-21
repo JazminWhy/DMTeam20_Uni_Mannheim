@@ -33,9 +33,17 @@ from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
 X_full = bankingcalldata.drop('y', axis=1)
 y_full = bankingcalldata['y']
 
-X_preprocessed = dataPreProcessing_Soumya.data_preprocessing(X_full, list(X_full), ONE_HOT= True)
+cols = X_full.columns
+num_cols = X_full._get_numeric_data().columns
+
+columns_to_onehot = list(set(cols) - set(num_cols))
+
+X_preprocessed = dataPreProcessing_Soumya.data_preprocessing(X_full, list(X_full), columns_to_onehot=columns_to_onehot,
+                                                             columns_to_label=None, columns_to_dummy=None,  normalise=True)
 
 X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.20, random_state=42, stratify=y_full)
+y_train.replace(('yes', 'no'), (1, 0), inplace=True)
+y_test.replace(('yes', 'no'), (1, 0), inplace=True)
 
 print('shapes')
 print(X_train.shape)
@@ -49,8 +57,8 @@ balance = True
 if balance==True:
     y_train = pd.DataFrame(data=y_train)
     train_full_balance= pd.DataFrame(data=X_train)
-    train_x_balance = train_full_balance[y_train["y"]== "yes"]
-    train_x_balance_0 = train_full_balance[y_train["y"]== "no"]
+    train_x_balance = train_full_balance[y_train["y"]== 1]
+    train_x_balance_0 = train_full_balance[y_train["y"]== 1]
     count_pos = train_x_balance.shape[0]
     train_xy_balance_0 = train_x_balance_0.assign(y=0)
     train_xy_balance = train_x_balance.assign(y=1)
@@ -58,10 +66,7 @@ if balance==True:
     train_full_balance = train_xy_balance.append(train_xy_balance_0_sample)
     X_train = train_full_balance.drop(['y'], axis=1)
     y_train = train_full_balance['y']
-else:
-    y_train.replace(('yes', 'no'), (1, 0), inplace=True)
 
-y_test.replace(('yes', 'no'), (1, 0), inplace=True)
 #print('X_train')
 #print(X_train.shape)
 #print('X_test')
