@@ -126,10 +126,10 @@ if balance==True:
     #print(X_train.shape)
     y_train = train_full_balance['y']
     #print(y_train.shape)
-
+else:
+    y_train.replace(('yes', 'no'), (1, 0), inplace=True)
 
 y_test.replace(('yes', 'no'), (1, 0), inplace=True)
-y_train.replace(('yes', 'no'), (1, 0), inplace=True)
 #print('X_train')
 #print(X_train.shape)
 #print('X_test')
