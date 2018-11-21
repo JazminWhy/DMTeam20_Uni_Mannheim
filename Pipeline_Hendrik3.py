@@ -97,7 +97,7 @@ print(y_test.shape)
 #print(X_train.head())
 print(y_full.value_counts())
 print(y_train.value_counts())
-balance = False
+balance = True
 if balance==True:
     #### END ####################### BALANCING data
     y_train = pd.DataFrame(data=y_train)
@@ -130,6 +130,8 @@ else:
     y_train.replace(('yes', 'no'), (1, 0), inplace=True)
 
 y_test.replace(('yes', 'no'), (1, 0), inplace=True)
+print('x')
+print(X_train.head(20))
 #print('X_train')
 #print(X_train.shape)
 #print('X_test')
