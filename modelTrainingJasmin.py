@@ -676,3 +676,4 @@ def search_train_evaluate_general_model(model, Classifier, X_train, y_train, X_t
     print(recall_score(y_test,results))
     print("F1")
     print(f1_score(y_test,results))
+    return best_model

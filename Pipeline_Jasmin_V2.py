@@ -385,7 +385,7 @@ cnb = ComplementNB()
 # print(f1_score(y_test,result_log))
 
 kn = KNeighborsClassifier()
-search_train_evaluate_general_model(kn, "KNN", X_train, y_train, X_test, y_test, params_knn, 10, fit_params=None)
+best_knn = search_train_evaluate_general_model(kn, "KNN", X_train, y_train, X_test, y_test, params_knn, 10, fit_params=None)
 
 
 
