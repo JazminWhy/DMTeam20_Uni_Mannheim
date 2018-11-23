@@ -304,6 +304,6 @@ def grid_search_cost_params(model, features, target, parameters, fit_params, fol
     print("best profit is {} with params {} ".format(grid_search_estimator.best_score_,
                                                       grid_search_estimator.best_params_))
 
-    return grid_search_estimator.best_params
+    return grid_search_estimator.best_params_
 
 
