@@ -101,7 +101,7 @@ def grid_search(model, features, target, positive_label, parameters, fit_params,
         model_scorer = make_scorer(accuracy_score)
         scoring = "accuracy"
     cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
+    grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer, verbose=5,
                                          cv=cross_validation, fit_params=fit_params)
     grid_search_estimator.fit(features, target)
 
@@ -132,7 +132,7 @@ def grid_search_model(model, features, target, positive_label, parameters, fit_p
     print('grid search started with ' + str(k) + ' folds')
     cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
     grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
-                                         cv=cross_validation, fit_params=fit_params, verbose=2)
+                                         cv=cross_validation, fit_params=fit_params, verbose=2, n_jobs= -1)
     grid_search_estimator.fit(features, target)
 
     results = grid_search_estimator.cv_results_
