@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8763f11b-018f-4d8e-b145-eadf8e0efd4b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/DMTeam20_Uni_Mannheim.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/DMTeam20_Uni_Mannheim.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Banking_Call_PoC (3).ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/Banking_Call_PoC (3).ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GridSearchOptimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/GridSearchOptimization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PipelineHendrik.py" beforeDir="false" afterPath="$PROJECT_DIR$/PipelineHendrik.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pipeline_Hendrik3.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pipeline_Hendrik3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pipeline_Jasmin.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pipeline_Jasmin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pipeline_Jasmin_V2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pipeline_Jasmin_V2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pipeline_Soumya.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pipeline_Soumya.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataPreProcessing_Soumya.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataPreProcessing_Soumya.py" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/DMTeam20_Uni_Mannheim$Pipeline.coverage" NAME="Pipeline Coverage Results" MODIFIED="1542977944904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DMTeam20_Uni_Mannheim$Pipeline_Jasmin_V2.coverage" NAME="Pipeline_Jasmin_V2 Coverage Results" MODIFIED="1542974612941" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DMTeam20_Uni_Mannheim$PipelineMarius.coverage" NAME="PipelineMarius Coverage Results" MODIFIED="1542976450294" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="69069354">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="9" />
+          <entry key="project.open.time.0" value="3" />
+          <entry key="project.open.time.1" value="5" />
+          <entry key="project.open.time.4" value="1" />
+          <entry key="project.open.time.5" value="1" />
+          <entry key="project.open.time.7" value="1" />
+          <entry key="project.opened" value="11" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="csv" value="3" />
+          <entry key="ipynb" value="22" />
+          <entry key="py" value="29" />
+          <entry key="vmoptions" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="IPNB" value="22" />
+          <entry key="PLAIN_TEXT" value="4" />
+          <entry key="Python" value="29" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="dummy" value="14" />
+          <entry key="py" value="7086" />
+          <entry key="txt" value="125" />
+          <entry key="vmoptions" value="5" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="PLAIN_TEXT" value="144" />
+          <entry key="Python" value="7086" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.js.language.service.starts" />
+      <usages-collector id="statistics.vcs.git.usages" />
+    </session>
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Pipeline_Jasmin_V2.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="547">
+              <caret line="395" lean-forward="true" selection-start-line="380" selection-end-line="395" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/GridSearchOptimization.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret selection-end-line="61" selection-end-column="28" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dataPreProcessing_Soumya.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="167">
+              <caret line="148" column="18" selection-start-line="148" selection-end-line="148" selection-end-column="18" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PipelineMarius.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-9">
+              <caret line="86" lean-forward="true" selection-start-line="86" selection-end-line="86" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Pipeline.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="549">
+              <caret line="61" column="28" selection-start-line="61" selection-start-column="28" selection-end-line="61" selection-end-column="28" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ModelTraining.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="941">
+              <caret line="730" selection-start-line="730" selection-end-line="730" />
+              <folding>
+                <element signature="e#0#24#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Pipeline_Jasmin.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="90">
+              <caret line="9" selection-start-line="9" selection-end-line="9" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Jupyter Notebook" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>comple</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="UPDATE_TYPE" value="MERGE" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Data_visualization.ipynb" />
+        <option value="$PROJECT_DIR$/Data_preparation.ipynb" />
+        <option value="$PROJECT_DIR$/Feature_engineering.ipynb" />
+        <option value="$PROJECT_DIR$/Model_training.py" />
+        <option value="$PROJECT_DIR$/Model_training.ipynb" />
+        <option value="$PROJECT_DIR$/TestNotebook.ipynb" />
+        <option value="$PROJECT_DIR$/Pipeline.ipynb" />
+        <option value="$PROJECT_DIR$/Baseline.ipynb" />
+        <option value="$APPLICATION_CONFIG_DIR$/pycharm.vmoptions" />
+        <option value="$PROJECT_DIR$/modelEvaluation.py" />
+        <option value="$PROJECT_DIR$/dataPreProcessingMarius.py" />
+        <option value="$PROJECT_DIR$/dataPreProcessing_Soumya.py" />
+        <option value="$PROJECT_DIR$/modelTrainingMarius.py" />
+        <option value="$PROJECT_DIR$/modelTrainingJasmin.py" />
+        <option value="$PROJECT_DIR$/Pipeline_Hendrik2.py" />
+        <option value="$PROJECT_DIR$/Pipeline_Hendrik3.py" />
+        <option value="$PROJECT_DIR$/Pipeline_Jasmin.py" />
+        <option value="$PROJECT_DIR$/Pipeline_Soumya.py" />
+        <option value="$PROJECT_DIR$/PipelineHendrik.py" />
+        <option value="$PROJECT_DIR$/PipelineMarius.py" />
+        <option value="$PROJECT_DIR$/Pipeline_Jasmin_V2.py" />
+        <option value="$PROJECT_DIR$/ModelTraining.py" />
+        <option value="$PROJECT_DIR$/GridSearchOptimization.py" />
+        <option value="$PROJECT_DIR$/Pipeline.py" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="width" value="1440" />
+    <option name="height" value="900" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="DMTeam20_Uni_Mannheim" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DMTeam20_Uni_Mannheim" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DMTeam20_Uni_Mannheim" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DMTeam20_Uni_Mannheim" type="462c0819:PsiDirectoryNode" />
+              <item name="input" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.Pipeline">
+    <configuration name="Pipeline" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="DMTeam20_Uni_Mannheim" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Pipeline.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="PipelineMarius" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="DMTeam20_Uni_Mannheim" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PipelineMarius.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Pipeline_Jasmin_V2" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="DMTeam20_Uni_Mannheim" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Pipeline_Jasmin_V2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.Pipeline" />
+      <item itemvalue="Python.PipelineMarius" />
+      <item itemvalue="Python.Pipeline_Jasmin_V2" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.Pipeline" />
+        <item itemvalue="Python.PipelineMarius" />
+        <item itemvalue="Python.Pipeline_Jasmin_V2" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8763f11b-018f-4d8e-b145-eadf8e0efd4b" name="Default Changelist" comment="" />
+      <created>1541767540978</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1541767540978</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Baseline code (just for reference)&#10;ModelTraining example&#10;&quot;working pipeline&quot;">
+      <created>1542185146750</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1542185146750</updated>
+    </task>
+    <task id="LOCAL-00002" summary="ModelTraining example v2">
+      <created>1542186369245</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1542186369245</updated>
+    </task>
+    <task id="LOCAL-00003" summary="ModelTraining XGBoost + LGBM">
+      <created>1542379362451</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1542379362451</updated>
+    </task>
+    <task id="LOCAL-00004" summary="ModelTraining XGBoost + LGBM">
+      <created>1542569137613</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1542569137613</updated>
+    </task>
+    <task id="LOCAL-00005" summary="ModelTraining Keras + Ensemble">
+      <created>1542616529708</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1542616529708</updated>
+    </task>
+    <task id="LOCAL-00006" summary="ModelTraining Keras + Ensemble">
+      <created>1542979064745</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1542979064745</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49879518" visible="true" weight="0.27825466" />
+      <window_info id="Structure" order="1" sideWeight="0.50120485" side_tool="true" weight="0.2746781" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32891566" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.26385543" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32891566" />
+      <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="Terminal" order="11" />
+      <window_info anchor="bottom" id="Python Console" order="12" />
+      <window_info anchor="bottom" id="Messages" order="13" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="3" />
+      <window_info anchor="right" id="Database" order="4" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Baseline code (just for reference)&#10;ModelTraining example&#10;&quot;working pipeline&quot;" />
+    <MESSAGE value="ModelTraining example v2" />
+    <MESSAGE value="ModelTraining XGBoost + LGBM" />
+    <MESSAGE value="ModelTraining Keras + Ensemble" />
+    <option name="LAST_COMMIT_MESSAGE" value="ModelTraining Keras + Ensemble" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Model_training.py" />
+    <entry file="file://$PROJECT_DIR$/Data_visualization.ipynb" />
+    <entry file="file://$PROJECT_DIR$/Data_preparation.ipynb" />
+    <entry file="file://$PROJECT_DIR$/Feature_engineering.ipynb" />
+    <entry file="file://$PROJECT_DIR$/Model_training.ipynb" />
+    <entry file="file:///opt/intel/intelpython3/lib/python3.6/site-packages/lightgbm/basic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="133" selection-start-line="133" selection-end-line="133" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestNotebook.ipynb" />
+    <entry file="file://$PROJECT_DIR$/modelEvaluation.ipynb" />
+    <entry file="file://$PROJECT_DIR$/dataExploration.ipynb" />
+    <entry file="file://$PROJECT_DIR$/dataPreprocessing.ipynb" />
+    <entry file="file://$PROJECT_DIR$/testmodule.py" />
+    <entry file="file://$APPLICATION_CONFIG_DIR$/pycharm.vmoptions">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="9" selection-start-line="3" selection-start-column="9" selection-end-line="3" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Baseline.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ModelEvaluation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1680">
+          <caret line="128" column="106" selection-start-line="128" selection-start-column="106" selection-end-line="128" selection-end-column="106" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///opt/intel/intelpython3/lib/python3.6/site-packages/pandas/core/series.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="766" selection-start-line="766" selection-end-line="766" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataPreProcessingMarius.py" />
+    <entry file="file://$PROJECT_DIR$/modelTrainingMarius.py" />
+    <entry file="file://$PROJECT_DIR$/Pipeline.ipynb" />
+    <entry file="file://$PROJECT_DIR$/Pipeline_Hendrik2.py" />
+    <entry file="file://$PROJECT_DIR$/Pipeline_Hendrik3.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Google Drive/SAP Innovation Center (internship)/Machine Learning/Scripts/Allstate/Winning_scripts/KerasBaggingLB.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/input/bank-additional-full.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-6533" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pipeline_Soumya.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pipeline_Jasmin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Banking_Call_PoC (3).ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pipeline_Jasmin_V2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="547">
+          <caret line="395" lean-forward="true" selection-start-line="380" selection-end-line="395" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PipelineHendrik.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ModelTraining.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="941">
+          <caret line="730" selection-start-line="730" selection-end-line="730" />
+          <folding>
+            <element signature="e#0#24#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataPreProcessing_Soumya.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="167">
+          <caret line="148" column="18" selection-start-line="148" selection-end-line="148" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PipelineMarius.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="86" lean-forward="true" selection-start-line="86" selection-end-line="86" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataPreprocessingSoumya.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GridSearchOptimization.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="61" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pipeline.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="549">
+          <caret line="61" column="28" selection-start-line="61" selection-start-column="28" selection-end-line="61" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
