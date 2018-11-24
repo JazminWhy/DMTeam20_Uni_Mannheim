@@ -256,6 +256,7 @@ def get_roc(model, features, target, positive_label):
 
 def profit_score_function(y_true, y_predicted): #Same as the_unbalanced function
     score = 0
+    score_i = 0
     for i, v in enumerate(y_true, 1):
         if y_predicted[i-1] == 1 and v == 1: # TP
             score_i = profit_tp
