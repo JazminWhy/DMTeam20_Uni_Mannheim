@@ -48,9 +48,9 @@ print(y_full.head())
 
 X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.20, random_state=42, stratify=y_full)
 
-X_train_balanced, y_train_balanced = data_balancing(X_train, y_train)
-
 y_train.replace(('yes', 'no'), (1, 0), inplace=True)
+
+X_train_balanced, y_train_balanced = data_balancing(X_train, y_train)
 
 print(X_train.shape)
 print(X_test.shape)
