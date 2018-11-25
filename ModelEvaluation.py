@@ -25,7 +25,7 @@ k = 10
 
 # Set the values for profit calculation
 profit_customer = 200 # Exclusing the cost of a call!
-cost_call = 12 # State a positive value1
+cost_call = 10 # State a positive value1
 
 profit_tp = profit_customer - cost_call # Currently 990
 profit_fp = -cost_call # Currently -10
