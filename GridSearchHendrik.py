@@ -31,7 +31,7 @@ y_full.replace(('yes', 'no'), (1, 0), inplace=True)
 
 # Apply binning
 X_full['age'] = bin_age(X_full).astype('object')
-X_full['duration'] = bin_duration(X_full).astype('object')
+#X_full['duration'] = bin_duration(X_full).astype('object')
 X_full['pmonths'] = bin_pdays(X_full).astype('object')
 
 # Create new features
@@ -39,10 +39,10 @@ X_full = not_contacted(X_full)
 
 
 X_preprocessed = data_preprocessing(data_set=X_full,
-                                    columns_to_drop=[],
-                                    columns_to_onehot=['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month', 'day_of_week','previous','poutcome'],
-                                    columns_to_dummy=[],
-                                    columns_to_label=[],
+                                    columns_to_drop=["duration", "day_of_week",'poutcome', "pdays"],
+                                    columns_to_onehot=['month'],
+                                    columns_to_dummy=["age", "marital", "education", "default", 'housing', 'loan', 'contact', "pmonths"],
+                                    columns_to_label=["job"],
                                     normalise=True)
 
 print(y_full.head())
@@ -147,23 +147,23 @@ print(y_full.value_counts())
 ######################################### COMPLEMENT NB ################################################################
 
 ######################################### DECISION TREE ################################################################
-# params_dtree = {'criterion':['gini', 'entropy'],
-#                 'splitter':['best'],
-#                 'max_depth':[2, 5, 10, None],
-#                 'min_samples_split':[2, 4, 6, 10],
-#                 'min_samples_leaf':[15, 20, 25],
-#                 'min_weight_fraction_leaf':[0.0, 0.15, 0.2],
-#                 'random_state':[42],
-#                 'min_impurity_decrease':[0.0, 0.1, 0.2]
-#                 }
-# best_dtree = search_best_params_and_evaluate_general_model(classifier="DecisionTree",
-#                                                          X_train = X_train,
-#                                                          y_train = y_train,
-#                                                          X_test = X_test,
-#                                                          y_test=y_test,
-#                                                          parameter_dict=params_dtree,
-#                                                          n_folds=5
-#                                                          )
+params_dtree = {'criterion':['gini', 'entropy'],
+                'splitter':['best'],
+                'max_depth':[2, 5, 10, None],
+                'min_samples_split':[2, 4, 6, 10],
+                'min_samples_leaf':[15, 20, 25],
+                'min_weight_fraction_leaf':[0.0, 0.15, 0.2],
+                'random_state':[123],
+                'min_impurity_decrease':[0.0, 0.1, 0.2]
+                }
+best_dtree = search_best_params_and_evaluate_general_model(classifier="DecisionTree",
+                                                         X_train = X_train,
+                                                         y_train = y_train,
+                                                         X_test = X_test,
+                                                         y_test=y_test,
+                                                         parameter_dict=params_dtree,
+                                                         n_folds=5
+                                                         )
 ######################################### XGBOOST ######################################################################
 
 # params_xgb = {
@@ -191,15 +191,15 @@ print(y_full.value_counts())
 #                                                          n_folds=5
 #                                                          )
 ######################################### SUPPORT VECTOR MACHINES ######################################################
-params_svm = {'C':[0.001, 0.01, 0.1, 1, 10, 100, 1000],
-              'class_weight':["Balanced", None]
-              }
-
-best_svm = search_best_params_and_evaluate_general_model(classifier="RandomForest",
-                                                         X_train = X_train,
-                                                         y_train = y_train,
-                                                         X_test = X_test,
-                                                         y_test=y_test,
-                                                         parameter_dict=params_svm,
-                                                         n_folds=5
-                                                         )
+# params_svm = {'C':[0.001, 0.01, 0.1, 1, 10, 100, 1000],
+#               'class_weight':["balanced", None]
+#               }
+#
+# best_svm = search_best_params_and_evaluate_general_model(classifier="SupportVectorMachine",
+#                                                          X_train = X_train,
+#                                                          y_train = y_train,
+#                                                          X_test = X_test,
+#                                                          y_test=y_test,
+#                                                          parameter_dict=params_svm,
+#                                                          n_folds=5
+#                                                          )
