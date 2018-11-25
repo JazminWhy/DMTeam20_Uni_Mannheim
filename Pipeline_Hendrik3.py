@@ -44,7 +44,7 @@ X_preprocessed = data_preprocessing(data_set=X_full,
 
 # Train test split
 X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.40, random_state=42, stratify=y_full)
-# Balancing
+#Balancing
 X_train, y_train = data_balancing(X_train=X_train, y_train=y_train)
 
 print(y_test.value_counts())
@@ -252,10 +252,10 @@ print(f1_score(y_test,result_knn))
 dtree_grid = tree.DecisionTreeClassifier()
 params_dtree = {'criterion':['gini', 'entropy'],
                 'splitter':['best'],
-                'max_depth':[2, 3],
+                'max_depth':[3, 5, 8, 15, 25, None],
                 'min_samples_split':[2, 3, 4, 5],
-                'min_samples_leaf':[18],
-                'min_weight_fraction_leaf':[0.0],
+                'min_samples_leaf':[18, 19, 20, 21, 22],
+                'min_weight_fraction_leaf':[0.0, 0.1, 0.2],
                 #'max_features':None,
                 #'random_state':None,
                 #'max_leaf_nodes':None,
@@ -265,7 +265,7 @@ params_dtree = {'criterion':['gini', 'entropy'],
                 #'presort':False
                 }
 
-best_model = grid_search_cost_model_balanced(model=dtree_grid, features=X_train, target=y_train, parameters=params_dtree, folds=10, fit_params=None)
+best_model = grid_search_cost_model_unbalanced(model=dtree_grid, features=X_train, target=y_train, parameters=params_dtree, folds=10, fit_params=None)
 #best_model = grid_search_model(model=dtree_grid, features=X_train, target=y_train, positive_label=1, parameters=params_dtree, fit_params=None, score="f1", folds=2)
 best_dtree_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
 result_dtree = predict_general_model_results(best_dtree_model,x_test=X_test)
@@ -275,7 +275,7 @@ print(precision_score(y_test,result_dtree))
 print(recall_score(y_test,result_dtree))
 print(f1_score(y_test,result_dtree))
 print(profit_score_function_unbalanced(y_test,result_dtree))
-profit_matrix(y_test,result_dtree, 990, -10)
+profit_matrix(y_test,result_dtree, 390, -10)
 
 """
 ################ GRID SEARCH NEAREST CENTROID

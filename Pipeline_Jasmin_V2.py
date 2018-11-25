@@ -6,19 +6,20 @@ from sklearn.neighbors import KNeighborsClassifier
 warnings.filterwarnings('ignore')
 
 import pandas as pd
-#import modelTrainingMarius as modelTraining
+import modelTrainingMarius as modelTraining
 from modelEvaluation import *
 from modelTrainingJasmin import *
 from dataPreProcessing_Soumya import *
 from sklearn.metrics import mean_absolute_error, accuracy_score, average_precision_score, recall_score, confusion_matrix
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold, cross_validate
+import sklearn.model_selection
 ### Data Loading #####
 
 #Print all rows and columns. Dont hide any.
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 
-bankingcalldata = pd.read_csv('/Users/Soumya/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
+bankingcalldata = pd.read_csv('C:/Users/jawei/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
 #C:\Users\jawei\PycharmProjects\DMTeam20_Uni_Mannheim\input
 #### This is just for the model guys to train test their models #######
 
@@ -43,9 +44,9 @@ X_preprocessed = data_preprocessing(data_set=X_full,
                                                              normalise=True)
 
 # Train test split
-X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.30, random_state=42, stratify=y_full)
+X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.20, random_state=42, stratify=y_full)
 # Balancing
-#X_train, y_train = data_balancing(X_train=X_train, y_train=y_train)
+X_train, y_train = data_balancing(X_train=X_train, y_train=y_train)
 
 print(y_test.value_counts())
 
@@ -142,7 +143,7 @@ lgbm_params_1 = {
 #     #'early_stopping_rounds': 50,
 #     #'verbose': 50
 # }
-#
+# 
 # grid_search(xgb_model_1, features=X_train, target=y_train, positive_label=1, parameters=params_xgb, score="kuchen",fit_params = fit_params, folds=2)
 
 # print("start")
@@ -153,14 +154,14 @@ lgbm_params_1 = {
 # confusion_matrix_report(y_test,result_knn)
 #
 # knn_grid = KNeighborsClassifier()
-# params_knn ={"n_neighbors":[2,3,4,5],"algorithm":['auto', 'ball_tree']}#, 'kd_tree', 'brute']}
+params_knn ={"n_neighbors":[2,3,4,5],"algorithm":['auto', 'ball_tree']}#, 'kd_tree', 'brute']}
 # grid_search_f1(model=knn_grid, features=X_train, target=y_train, positive_label=1, parameters=params_knn)
 # print("done")
 
 ## grid search with SVM
 
-# params_svm_grid = {'kernel':['sigmoid','linear','poly','rbf'], 'class_weight': [None,'balanced']}
-# svm = svm.SVC()
+params_svm_grid = {'kernel':['sigmoid','linear'], 'class_weight': [None,'balanced']}
+svm = svm.SVC()
 # best_model = grid_search_model(model=svm, features=X_train, target=y_train, positive_label=1, parameters=params_svm_grid, fit_params=None, score="precision", folds=5)
 # best_svm_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
 # result_svm = predict_general_model_results(best_svm_model,x_test=X_test)
@@ -187,7 +188,17 @@ lgbm_params_1 = {
 # print(precision_score(y_test,result_svm))
 # print(recall_score(y_test,result_svm))
 
-
+# best_model = grid_search_cost_model_balanced(model=svm, features=X_train, target=y_train, parameters=params_svm_grid, folds=10, fit_params=None)
+# #best_model = grid_search_model(model=dtree_grid, features=X_train, target=y_train, positive_label=1, parameters=params_dtree, fit_params=None, score="f1", folds=2)
+# best_svm_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
+# result_log = predict_general_model_results(best_svm_model,x_test=X_test)
+# confusion_matrix_report(y_test,result_log)
+# print(accuracy_score(y_test,result_log))
+# print(precision_score(y_test,result_log))
+# print(recall_score(y_test,result_log))
+# print(f1_score(y_test,result_log))
+# print(profit_score_function_balanced(y_test,result_log))
+# profit_matrix(y_test,result_log, 990, -10)
 
 ####### grid search MLP
 # params_mlp_grid = {'hidden_layer_sizes':[(100, ), ( 200, )], 'activation': ['logistic','relu','tanh'], 'solver':['sgd','adam','lbfgs'], 'learning_rate_init':[0.001, 0.0005]}
@@ -211,8 +222,8 @@ lgbm_params_1 = {
 
 
 ## logistic regression grid searcb
-# params_log_grid = {'penalty':['l2'], 'class_weight': [None,'balanced'], 'solver':['sag','newton-cg','lbfgs']}
-# log = LogisticRegression()
+params_log_grid = {'penalty':['l2'], 'class_weight': [None,'balanced'], 'solver':['sag','newton-cg','lbfgs']}
+log = LogisticRegression()
 # best_model = grid_search_model(model=log, features=X_train, target=y_train, positive_label=1, parameters=params_log_grid, fit_params=None, score="precision", folds=5)
 # best_log_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
 # result_log = predict_general_model_results(best_log_model,x_test=X_test)
@@ -220,6 +231,18 @@ lgbm_params_1 = {
 # print(accuracy_score(y_test,result_log))
 # print(precision_score(y_test,result_log))
 # print(recall_score(y_test,result_log))
+#
+# best_model = grid_search_cost_model_balanced(model=log, features=X_train, target=y_train, parameters=params_log_grid, folds=10, fit_params=None)
+# #best_model = grid_search_model(model=dtree_grid, features=X_train, target=y_train, positive_label=1, parameters=params_dtree, fit_params=None, score="f1", folds=2)
+# best_log_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
+# result_log = predict_general_model_results(best_log_model,x_test=X_test)
+# confusion_matrix_report(y_test,result_log)
+# print(accuracy_score(y_test,result_log))
+# print(precision_score(y_test,result_log))
+# print(recall_score(y_test,result_log))
+# print(f1_score(y_test,result_log))
+# print(profit_score_function_balanced(y_test,result_log))
+# profit_matrix(y_test,result_log, 990, -10)
 
 ## test logistic
 # params_log = {'penalty':'l2', 'dual':False, 'tol':0.0001, 'C':1.0, 'fit_intercept':True, 'intercept_scaling':1, 'class_weight':None, 'random_state':None, 'solver':'warn', 'max_iter':100, 'multi_class':'warn', 'verbose':0, 'warm_start':False, 'n_jobs':None}
@@ -249,38 +272,33 @@ print(f1_score(y_test,result_knn))
 """
 ################ GRID SEARCH DTREE
 
-dtree_grid = tree.DecisionTreeClassifier()
-params_dtree = {'criterion':['gini', 'entropy'],
-                'splitter':['best'],
-                'max_depth':[2, 3],
-                'min_samples_split':[2, 3, 4, 5],
-                'min_samples_leaf':[18],
-                'min_weight_fraction_leaf':[0.0],
-                #'max_features':None,
-                #'random_state':None,
-                #'max_leaf_nodes':None,
-                'min_impurity_decrease':[0.0],
-                #'min_impurity_split':None,
-                #'class_weight':None,
-                #'presort':False
-                }
-
-best_model = grid_search_model(model=dtree_grid, features=X_train, target=y_train, positive_label=1, parameters=params_dtree, fit_params=None, score ='recall', folds=10)
-#best_model = grid_search_model(model=dtree_grid, features=X_train, target=y_train, positive_label=1, parameters=params_dtree, fit_params=None, score="f1", folds=2)
-#best_dtree_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
-#best_model.fit(X_train,y_train)
-#cross_val_scores = cross_validate(best_model, X = X_full, y=y_full, scoring=['precision','recall','f1'])
-#print("tree has scores of {}".format(cross_val_scores))
-
-result_dtree = predict_general_model_results(best_model,x_test=X_test)
-confusion_matrix_report(y_test,result_dtree)
-print(accuracy_score(y_test,result_dtree))
-print(precision_score(y_test,result_dtree))
-print(recall_score(y_test,result_dtree))
-print(f1_score(y_test,result_dtree))
-print(profit_score_function(y_test,result_dtree))
-profit_matrix(y_test,result_dtree, 990, -10)
-
+# dtree_grid = tree.DecisionTreeClassifier()
+# params_dtree = {'criterion':['gini', 'entropy'],
+#                 'splitter':['best'],
+#                 'max_depth':[2, 3],
+#                 'min_samples_split':[2, 3, 4, 5],
+#                 'min_samples_leaf':[18],
+#                 'min_weight_fraction_leaf':[0.0],
+#                 #'max_features':None,
+#                 #'random_state':None,
+#                 #'max_leaf_nodes':None,
+#                 'min_impurity_decrease':[0.0],
+#                 #'min_impurity_split':None,
+#                 #'class_weight':None,
+#                 #'presort':False
+#                 }
+#
+# best_model = grid_search_cost_model_balanced(model=dtree_grid, features=X_train, target=y_train, parameters=params_dtree, folds=10, fit_params=None)
+# #best_model = grid_search_model(model=dtree_grid, features=X_train, target=y_train, positive_label=1, parameters=params_dtree, fit_params=None, score="f1", folds=2)
+# best_dtree_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
+# result_dtree = predict_general_model_results(best_dtree_model,x_test=X_test)
+# confusion_matrix_report(y_test,result_dtree)
+# print(accuracy_score(y_test,result_dtree))
+# print(precision_score(y_test,result_dtree))
+# print(recall_score(y_test,result_dtree))
+# print(f1_score(y_test,result_dtree))
+# print(profit_score_function_unbalanced(y_test,result_dtree))
+# profit_matrix(y_test,result_dtree, 990, -10)
 
 """
 ################ GRID SEARCH NEAREST CENTROID
@@ -327,8 +345,8 @@ print(f1_score(y_test,result_cnn))
 
 
 #### GridSearch ComplementNaiveBayes
-# params_cnb_grid = {'alpha':[1.0,2.0], 'fit_prior':[True,False], 'class_prior':[None], 'norm':[False,True]}
-# cnb = ComplementNB()
+params_cnb_grid = {'alpha':[1.4, 1.0], 'fit_prior':[True,False], 'class_prior':[None], 'norm':[False,True]}
+cnb = ComplementNB()
 # best_model = grid_search_model(model=cnb, features=X_train, target=y_train, positive_label=1, parameters=params_cnb_grid, fit_params=None, score="precision", folds=5)
 # best_cnb_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
 # result_cnb = predict_general_model_results(best_cnb_model,x_test=X_test)
@@ -337,12 +355,48 @@ print(f1_score(y_test,result_cnn))
 # print(precision_score(y_test,result_cnb))
 # print(recall_score(y_test,result_cnb))
 
+# best_model = grid_search_cost_model_unbalanced(model=cnb, features=X_train, target=y_train, parameters=params_cnb_grid, folds=10, fit_params=None)
+# #best_model = grid_search_model(model=dtree_grid, features=X_train, target=y_train, positive_label=1, parameters=params_dtree, fit_params=None, score="f1", folds=2)
+# best_svm_model = train_general_model(best_model, x_train=X_train, y_train=y_train, n_folds=10, fit_params = None, random_state=123, stratified=True, i=0, shuffle=True)
+# result_log = predict_general_model_results(best_svm_model,x_test=X_test)
+# confusion_matrix_report(y_test,result_log)
+# print(accuracy_score(y_test,result_log))
+# print(precision_score(y_test,result_log))
+# print(recall_score(y_test,result_log))
+# print(f1_score(y_test,result_log))
+# print(profit_score_function_unbalanced(y_test,result_log))
 
 ## need to normalize before, not yet available
 ## test Complement NB
 # params_nb = {'alpha':1.0, 'fit_prior':True, 'class_prior': None, 'norm':False}
 # naive_bayes_model = train_complement_naiveBayes(params_nb, fit_params=None, x_train=X_train, y_train = y_train, n_folds=5, random_state=123, stratified=True, i=0, shuffle=True)
 
+# best_model = grid_search_cost_model_unbalanced(model=log, features=X_train, target=y_train, parameters=params_log_grid, folds=10, fit_params=None)
+# params = best_model.get_params()
+# best_cnb = LogisticRegression(**params)
+# best_cnb.fit(X_train, y_train)  # , fit_params, eval_set=[(x_train_cv, y_train_cv), (x_val_cv, y_val_cv)])
+# # predict train and validation set accuracy and get eval metrics
+#
+# result_log = predict_general_model_results(best_cnb, X_test)
+# confusion_matrix_report(y_test,result_log)
+# print(accuracy_score(y_test,result_log))
+# print(precision_score(y_test,result_log))
+# print(recall_score(y_test,result_log))
+# print(f1_score(y_test,result_log))
+
+kn = KNeighborsClassifier()
+best_knn = search_train_evaluate_general_model(kn, "KNN", X_train, y_train, X_test, y_test, params_knn, 10, fit_params=None)
+
+
+
+
+
+
+
+# print(best_cnb)
+# skf = StratifiedKFold(n_splits=10, random_state=123, shuffle=False)
+# scores = cross_validate(best_cnb, X_train, y_train,cv=skf, scoring=["precision","recall"])
+# print(scores)
 
 ## GridSearch BernoulliNaiveBayes
 # params_bnb_grid = {'alpha':[1.0,2.0,1.5,3.0], 'binarize':[0.0], 'fit_prior':[False,True]}
