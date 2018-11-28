@@ -36,9 +36,8 @@ y_full = bankingcalldata['y']
 # Create new features
 # X_full = not_contacted(X_full)
 
-
 X_preprocessed = data_preprocessing(data_set=X_full,
-                                    columns_to_drop=[],
+                                    columns_to_drop=['duration'],
                                     columns_to_onehot=[],
                                     columns_to_dummy=[],
                                     columns_to_label=['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month', 'day_of_week','previous','poutcome'],
@@ -49,6 +48,8 @@ print(y_full.head())
 X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.20, random_state=42, stratify=y_full)
 
 y_train.replace(('yes', 'no'), (1, 0), inplace=True)
+y_test.replace(('yes', 'no'), (1, 0), inplace=True)
+y_full.replace(('yes', 'no'), (1, 0), inplace=True)
 
 X_train_balanced, y_train_balanced = data_balancing(X_train, y_train)
 
@@ -57,8 +58,8 @@ print(X_test.shape)
 print(y_train.shape)
 print(y_test.shape)
 print("BALANCED:")
-#print(X_train_balanced.shape)
-#print(y_train_balanced.shape)
+print(X_train_balanced.shape)
+print(y_train_balanced.shape)
 print(y_full.value_counts())
 
 ######################################### GRID SEARCH ##################################################################
@@ -84,15 +85,15 @@ print(y_full.value_counts())
 ######################################### XGBOOST ######################################################################
 
 params_xgb = {
-    "gamma": [0.05, 1],
-    "booster": ['gbtree', 'gblinear', 'dart'],
-    "max_depth": [3, 25],
-    "min_child_weight": [1, 7],
-    "subsample": [0.6, 1],
-    "colsample_bytree": [0.6, 1],
-    "reg_lambda": [0.01, 1],
-    "reg_alpha": [0, 1],
-    "learning_rate": [0.1, 0.01],
+    "gamma": [0.5, 1],
+    "booster": ['gbtree'],
+    "max_depth": [9, 12, 25],
+    "min_child_weight": [3,5, 7],
+    "subsample": [0.8, 0.9, 1],
+    "colsample_bytree": [0.8, 0.9,1],
+    "reg_lambda": [0.01,0.1],
+    "reg_alpha": [0, 0.5],
+    "learning_rate": [0.1, 0.05],
     "n_estimators": [100],
     "objective": ["binary:logistic"],
     "nthread": [-1],
@@ -100,11 +101,39 @@ params_xgb = {
     }
 
 best_xgb = search_best_params_and_evaluate_general_model(classifier="XGBoost",
-                                                         X_train = X_train,
-                                                         y_train = y_train,
-                                                         X_test = X_test,
+                                                         X_full=X_preprocessed,
+                                                         y_full=y_full,
+                                                         X_train=X_train,
+                                                         y_train=y_train,
+                                                         X_test=X_test,
                                                          y_test=y_test,
                                                          parameter_dict=params_xgb,
                                                          n_folds=5
                                                          )
 
+'''
+params_xgb = {
+    "gamma": 0.05,
+    "booster": 'gbtree',
+    "max_depth": 3,
+    "min_child_weight": 7,
+    "subsample": 1,
+    "colsample_bytree": 1,
+    "reg_lambda": 0.01,
+    "reg_alpha": 1,
+    "learning_rate": 0.1,
+    "n_estimators": 10000,
+    "objective": "binary:logistic",
+    "nthread": -1,
+    "seed": 27
+    }
+
+xgb_model_1 = train_xgb_model(params=params_xgb,
+                                  x_train=X_train_balanced,
+                                  y_train=y_train_balanced,
+                                  n_folds=10,
+                                  random_state=123
+                                  )
+
+
+'''
