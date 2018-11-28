@@ -795,8 +795,8 @@ if classifiers['neural_net']:
 
 train_probas= train_probas.set_index(y_train_l.index)
 
-train_probas.to_csv("1st_level_probs_train.csv", index=None)
-test_probas.to_csv("1st_level_probs_test.csv", index=None)
+train_probas.to_csv("1st_level_probs_train.csv")
+test_probas.to_csv("1st_level_probs_test.csv")
 
 train_probas = train_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 test_probas = test_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)

@@ -83,7 +83,7 @@ print(y_full.value_counts())
 ######################################### DECISION TREE ################################################################
 
 ######################################### XGBOOST ######################################################################
-
+'''
 params_xgb = {
     "gamma": [0.5, 1],
     "booster": ['gbtree'],
@@ -110,30 +110,47 @@ best_xgb = search_best_params_and_evaluate_general_model(classifier="XGBoost",
                                                          parameter_dict=params_xgb,
                                                          n_folds=5
                                                          )
-
 '''
+######################################### ENSEMBLE XGBOOST #############################################################
+
+train_probas = pd.read_csv("1st_level_probs_train.csv")
+test_probas = pd.read_csv("1st_level_probs_test.csv")
+
+train_probas = train_probas.set_index(y_train.index)
+
+train_probas = train_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
+test_probas = test_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
+
+x_train_probas_balanced, y_train_probas_balanced = data_balancing(train_probas, y_train)
+
+
 params_xgb = {
-    "gamma": 0.05,
-    "booster": 'gbtree',
-    "max_depth": 3,
-    "min_child_weight": 7,
-    "subsample": 1,
-    "colsample_bytree": 1,
-    "reg_lambda": 0.01,
-    "reg_alpha": 1,
-    "learning_rate": 0.1,
-    "n_estimators": 10000,
-    "objective": "binary:logistic",
-    "nthread": -1,
-    "seed": 27
+    "gamma": [0.05, 1],
+    "booster": ['gbtree', 'gblinear', 'dart'],
+    "max_depth": [3, 25],
+    "min_child_weight": [1, 7],
+    "subsample": [0.6, 1],
+    "colsample_bytree": [0.6, 1],
+    "reg_lambda": [0.01, 1],
+    "reg_alpha": [0, 1],
+    "learning_rate": [0.1, 0.01],
+    "n_estimators": [100],
+    "objective": ["binary:logistic"],
+    "nthread": [-1],
+    "seed": [27]
     }
 
-xgb_model_1 = train_xgb_model(params=params_xgb,
-                                  x_train=X_train_balanced,
-                                  y_train=y_train_balanced,
-                                  n_folds=10,
-                                  random_state=123
-                                  )
+best_xgb = search_best_params_and_evaluate_general_model(classifier="XGBoost",
+                                                         X_full=X_preprocessed,
+                                                         y_full=y_full,
+                                                         X_train=x_train_probas_balanced,
+                                                         y_train=y_train_probas_balanced,
+                                                         X_test=test_probas,
+                                                         y_test=y_test,
+                                                         parameter_dict=params_xgb,
+                                                         n_folds=5
+                                                         )
+
+######################################### ENSEMBLE RANDOM FOREST #######################################################
 
 
-'''

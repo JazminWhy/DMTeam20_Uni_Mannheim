@@ -201,7 +201,7 @@ def data_balancing(X_train, y_train):
     y_train = train_full_balance['y']
     return X_train, y_train
 
-bank_data = pd.read_csv('/Users/hroed/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
+bank_data = pd.read_csv('/Users/mariusbock/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
 # print(pd.__version__)
 # print(bank_data.head())
 # to_be_preprocessed = ['age','duration','campaign','pdays','emp.var.rate','cons.price.idx','job','marital','education','default','housing','loan','contact','month','day_of_week','previous']
