@@ -29,25 +29,38 @@ X_full = bankingcalldata.drop('y', axis=1)
 y_full = bankingcalldata['y']
 y_full.replace(('yes', 'no'), (1, 0), inplace=True)
 
-# Apply binning
-X_full['age'] = bin_age(X_full).astype('object')
-#X_full['duration'] = bin_duration(X_full).astype('object')
-X_full['pmonths'] = bin_pdays(X_full).astype('object')
 
 # Create new features
 X_full = not_contacted(X_full)
+X_full = contacted_last_9_days(X_full)
+X_full = campaign_split(X_full)
+X_full = elder_person(X_full)
+X_full = is_student(X_full)
+X_full = cellular_contact(X_full)
+X_full = euribor_bin(X_full)
+X_full = in_education(X_full)
+# Apply binning
 
+#X_full['duration'] = bin_duration(X_full).astype('object')
+X_full['pmonths'] = bin_pdays(X_full).astype('object')
+X_full['age'] = bin_age(X_full).astype('object')
 
 X_preprocessed = data_preprocessing(data_set=X_full,
-                                    columns_to_drop=["duration", "day_of_week",'poutcome', "pdays"],
-                                    columns_to_onehot=['month'],
-                                    columns_to_dummy=["age", "marital", "education", "default", 'housing', 'loan', 'contact', "pmonths"],
+                                    columns_to_drop=["duration", "day_of_week",'poutcome', "pdays", "campaign"],
+                                    columns_to_onehot=[],
+                                    columns_to_dummy=["age", "marital", "education", "default", 'housing', 'loan', 'contact', 'pmonths', "month"],
                                     columns_to_label=["job"],
                                     normalise=True)
+# X_preprocessed = data_preprocessing(data_set=X_full,
+#                                     columns_to_drop=["duration", "day_of_week",'poutcome', "pdays"],
+#                                     columns_to_onehot=[],
+#                                     columns_to_dummy=[],
+#                                     columns_to_label=["job", "age", "marital", "education", "default", 'housing', 'loan', 'contact', "pmonths", 'month'],
+#                                     normalise=True)
 
 print(y_full.head())
 
-X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.20, random_state=42, stratify=y_full)
+X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.20, random_state=123, stratify=y_full)
 
 X_train, y_train = data_balancing(X_train, y_train)
 
@@ -77,22 +90,31 @@ print(y_full.value_counts())
 #                                                          n_folds=5
 #                                                          )
 ######################################### RANDOM FOREST ################################################################
-# params_rdf = {'n_estimators':[500],
-#               'max_depth':[24, 25, 26],
+# params_rdf = {'n_estimators':[200, 500, 800],
+#               'max_depth':[10, 20, 30, None],
 #               'min_samples_split':[2, 3],
-#               'min_samples_leaf': [4, 5, 6],
+#               'min_samples_leaf': [2, 3,4, 5],
 #               'max_features': [None],
-#               'random_state': [42]
+#               'random_state': [123]
 #               }
-#
-# best_rdf = search_best_params_and_evaluate_general_model(classifier="RandomForest",
-#                                                          X_train = X_train,
-#                                                          y_train = y_train,
-#                                                          X_test = X_test,
-#                                                          y_test=y_test,
-#                                                          parameter_dict=params_rdf,
-#                                                          n_folds=5
-#                                                          )
+params_rdf = {'n_estimators':[1000, 3000, 5000],
+              'max_depth':[2, 3, 4, 5, None],
+              'min_samples_split':[2],
+              'min_samples_leaf': [2],
+              'max_features': [21],
+              'random_state': [123]
+              }
+best_rdf = search_best_params_and_evaluate_general_model(classifier="RandomForest",
+
+                                                         X_train = X_train,
+                                                         y_train = y_train,
+                                                         X_test = X_test,
+                                                         y_test=y_test,
+                                                         parameter_dict=params_rdf,
+                                                         n_folds=5
+                                                         )
+
+
 ######################################### BERNOULLI NAIVE BAYES ########################################################
 # params_bnb = {'alpha':[1.0,2.0,1.5,3.0],
 #               'binarize':[0.0],
@@ -124,7 +146,7 @@ print(y_full.value_counts())
 # params_knn = {"n_neighbors":[2, 4, 8, 16, 32, 64],
 #               "algorithm":['auto', 'ball_tree'],
 #               "metric":['euclidean', 'manhattan'],
-#               "p": [2, 3]
+#               "p": [2]
 #               }
 # best_knn = search_best_params_and_evaluate_general_model(classifier="KNN",
 #                                                          X_train = X_train,
@@ -147,23 +169,23 @@ print(y_full.value_counts())
 ######################################### COMPLEMENT NB ################################################################
 
 ######################################### DECISION TREE ################################################################
-params_dtree = {'criterion':['gini', 'entropy'],
-                'splitter':['best'],
-                'max_depth':[2, 5, 10, None],
-                'min_samples_split':[2, 4, 6, 10],
-                'min_samples_leaf':[15, 20, 25],
-                'min_weight_fraction_leaf':[0.0, 0.15, 0.2],
-                'random_state':[123],
-                'min_impurity_decrease':[0.0, 0.1, 0.2]
-                }
-best_dtree = search_best_params_and_evaluate_general_model(classifier="DecisionTree",
-                                                         X_train = X_train,
-                                                         y_train = y_train,
-                                                         X_test = X_test,
-                                                         y_test=y_test,
-                                                         parameter_dict=params_dtree,
-                                                         n_folds=5
-                                                         )
+# params_dtree = {'criterion':['gini', 'entropy'],
+#                 'splitter':['best'],
+#                 'max_depth':[2, 5, 10, None],
+#                 'min_samples_split':[2, 4, 6, 10],
+#                 'min_samples_leaf':[15, 20, 25],
+#                 'min_weight_fraction_leaf':[0.0, 0.15, 0.2],
+#                 'random_state':[123],
+#                 'min_impurity_decrease':[0.0]
+#                 }
+# best_dtree = search_best_params_and_evaluate_general_model(classifier="DecisionTree",
+#                                                          X_train = X_train,
+#                                                          y_train = y_train,
+#                                                          X_test = X_test,
+#                                                          y_test=y_test,
+#                                                          parameter_dict=params_dtree,
+#                                                          n_folds=5
+#                                                          )
 ######################################### XGBOOST ######################################################################
 
 # params_xgb = {

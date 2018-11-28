@@ -116,13 +116,44 @@ def data_preprocessing(data_set, columns_to_drop, columns_to_onehot, columns_to_
 
     return bank_data_norm_encoded
 
+def elder_person(data_set):
+    data_set['elder'] = np.where(data_set['age'] > 60, 1, 0)
+    return data_set
+
+def is_student(data_set):
+    data_set['student'] = np.where(data_set['job'] == "student", 1, 0)
+    return data_set
+
+def cellular_contact(data_set):
+    data_set['cellular'] = np.where(data_set['contact'] == "cellular", 1, 0)
+    return data_set
+
+def euribor_bin(data_set):
+    data_set["euribor_bin"] = 0
+    for index, row in data_set.iterrows():
+        if row["euribor3m"] >= 1.5 and row["euribor3m"] < 2.5:
+            data_set["euribor_bin"] = 1
+    return data_set
+
+def in_education(data_set):
+    data_set["in_education"] = 0
+    for index, row in data_set.iterrows():
+        count = 0
+        if row["age"] < 18:
+            count += 1
+        if row["job"] == "student":
+            count += 1
+        if row["education"] == "university.degree":
+            count += 1
+        if count >= 2:
+            row["in_education"] = 1
+    return data_set
 
 def bin_age(data_set):
     bins = [0, 17, 34, 60, 100]
     data_set['age'] = pd.cut(data_set['age'], bins, labels=['Child', 'Adult', 'Middle_aged', 'Old'])
 #    print(data_set['age'])
     return data_set['age'].astype('object')
-
 
 def bin_duration(data_set):
     duration_in_min = data_set['duration']/60
@@ -135,6 +166,16 @@ def bin_duration(data_set):
 def not_contacted(data_set):
     data_set['not_contacted'] = 0
     data_set.loc[data_set['pdays'] == 999 ,'not_contacted'] = 1
+    return data_set
+
+def contacted_last_9_days(data_set):
+    data_set['contacted_last_9_days'] = 0
+    data_set.loc[data_set['pdays'] < 10 ,'contacted_last_9_days'] = 1
+    return data_set
+
+def campaign_split(data_set):
+    data_set['campaign_many_calls'] = 0
+    data_set.loc[data_set['campaign'] < 20 ,'campaign_many_calls'] = 1
     return data_set
 
 
@@ -160,7 +201,7 @@ def data_balancing(X_train, y_train):
     y_train = train_full_balance['y']
     return X_train, y_train
 
-bank_data = pd.read_csv('/Users/Soumya/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
+bank_data = pd.read_csv('/Users/hroed/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
 # print(pd.__version__)
 # print(bank_data.head())
 # to_be_preprocessed = ['age','duration','campaign','pdays','emp.var.rate','cons.price.idx','job','marital','education','default','housing','loan','contact','month','day_of_week','previous']
