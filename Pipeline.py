@@ -1,5 +1,5 @@
 from ModelTraining import *
-from dataPreProcessing_Soumya import *
+from DataPreProcessing import *
 from sklearn.model_selection import train_test_split
 # Supress unnecessary warnings so that presentation looks clean
 import warnings
@@ -62,9 +62,12 @@ X_preprocessed_label = data_preprocessing(data_set=X_full,
                                           normalise=True)
 
 
-X_train_o, X_test_o, y_train_o, y_test_o = train_test_split(X_preprocessed_one_hot, y_full, test_size=0.20, random_state=42, stratify=y_full)
-X_train_d, X_test_d, y_train_d, y_test_d = train_test_split(X_preprocessed_dummies, y_full, test_size=0.20, random_state=42, stratify=y_full)
-X_train_l, X_test_l, y_train_l, y_test_l = train_test_split(X_preprocessed_label, y_full, test_size=0.20, random_state=42, stratify=y_full)
+X_train_o, X_test_o, y_train_o, y_test_o = train_test_split(X_preprocessed_one_hot, y_full,
+                                                            test_size=0.20, random_state=42, stratify=y_full)
+X_train_d, X_test_d, y_train_d, y_test_d = train_test_split(X_preprocessed_dummies, y_full,
+                                                            test_size=0.20, random_state=42, stratify=y_full)
+X_train_l, X_test_l, y_train_l, y_test_l = train_test_split(X_preprocessed_label, y_full,
+                                                            test_size=0.20, random_state=42, stratify=y_full)
 
 
 X_train_balanced_o, y_train_balanced_o = data_balancing(X_train_o, y_train_o)
@@ -110,27 +113,24 @@ print()
 # Dictionary to decide which ones to run; set value to False if you want the algorithm to be skipped
 classifiers = {
     'g_naive_bayes': True,
+    'b_naive_bayes': True,
+    'c_naive_bayes': True,
     'nearest_centroid': True,
     'knn': True,
     'decision_tree': True,
-    'rule_learner': False,
     'logistic': True,
-    'b_naive_bayes': True,
     'random_forest': True,
     'svm': True,
-    'c_naive_bayes': True,
-    'xgboost': True,
-    'lightgbm': False,
-    'neural_net': False,
+    'xgboost': True
 }
 
-### Base Classifiers ###
+# Base Classifiers
 if classifiers['g_naive_bayes']:
     print('\n Training Gaussian Naive Bayes \n')
 
     params_gnb = {
         'priors': None,
-        'var_smoothing':1e-10
+        'var_smoothing': 1e-10
     }
 
     g_naive_bayes_model = train_naive_bayes(params_gnb,
@@ -179,7 +179,7 @@ if classifiers['nearest_centroid']:
     print('\n Training Nearest Centroid \n')
 
     params_nearest_centroid = {
-        'metric':'euclidean'
+        'metric': 'euclidean'
         }
 
     nearest_centroid_model = train_nearest_centroid(params_nearest_centroid,
@@ -242,8 +242,8 @@ if classifiers['knn']:
                           shuffle=True
                           )
 
-    knn_x_train_probs = knn_model.predict_proba(X_train_d)
-    knn_x_test_probs = knn_model.predict_proba(X_test_d)
+    knn_x_train_probas = knn_model.predict_proba(X_train_d)
+    knn_x_test_probas = knn_model.predict_proba(X_test_d)
 
     y_pred_full = knn_model.predict(X_preprocessed_dummies)
     y_pred_test = knn_model.predict(X_test_d)
@@ -274,6 +274,7 @@ if classifiers['knn']:
     print("F1")
     print(f1_score(y_test_d, y_pred_test))
 
+
 if classifiers['decision_tree']:
     print('\n Training Decision Tree \n')
 
@@ -296,8 +297,8 @@ if classifiers['decision_tree']:
                                               shuffle=True
                                               )
 
-    dt_x_train_probs = decision_tree_model.predict_proba(X_train_d)
-    dt_x_test_probs = decision_tree_model.predict_proba(X_test_d)
+    dt_x_train_probas = decision_tree_model.predict_proba(X_train_d)
+    dt_x_test_probas = decision_tree_model.predict_proba(X_test_d)
 
     y_pred_full = decision_tree_model.predict(X_preprocessed_dummies)
     y_pred_test = decision_tree_model.predict(X_test_d)
@@ -329,62 +330,6 @@ if classifiers['decision_tree']:
     print(f1_score(y_test_d, y_pred_test))
 
 
-if classifiers['rule_learner']:
-    print('\n Training Rule Learner \n')
-
-    X_train_rules = X_train.drop('nr.employed', axis=1)
-    X_train_rules = X_train_rules.drop('emp.var.rate', axis=1)
-    X_train_rules = X_train_rules.drop('cons.conf.idx', axis=1)
-    X_train_rules = X_train_rules.drop('cons.price.idx', axis=1)
-
-    params_rule = {
-        'max_depth_duplication': None,
-        'n_estimators': 10,
-        'precision_min': 0.2,
-        'recall_min': 0.01,
-        'feature_names': list(X_train_rules.columns.values)
-    }
-    rule_learner_model = skope_rules(params_rule,
-                                     x_train=X_train_rules,
-                                     y_train = y_train,
-                                     n_folds=10,
-                                     random_state=123,
-                                     stratified=True,
-                                     shuffle=True
-                                     )
-
-    rl_x_train_probs = rule_learner_model.predict_proba(X_train)
-    rl_x_test_probs = rule_learner_model.predict_proba(X_test)
-
-    y_pred_full = rule_learner_model.predict(X_preprocessed)
-    y_pred_test = rule_learner_model.predict(X_test)
-
-    print("Whole dataset score:")
-    print(profit_score_function(y_full, y_pred_full))
-    print("Confusion")
-    confusion_matrix_report(y_full, y_pred_full)
-    print("Acc")
-    print(accuracy_score(y_full, y_pred_full))
-    print("Precision")
-    print(precision_score(y_full, y_pred_full))
-    print("Recall")
-    print(recall_score(y_full, y_pred_full))
-    print("F1")
-    print(f1_score(y_full, y_pred_full))
-
-    print("Test dataset score:")
-    print(profit_score_function(y_test, y_pred_test))
-    print("Confusion")
-    confusion_matrix_report(y_test, y_pred_test)
-    print("Acc")
-    print(accuracy_score(y_test, y_pred_test))
-    print("Precision")
-    print(precision_score(y_test, y_pred_test))
-    print("Recall")
-    print(recall_score(y_test, y_pred_test))
-    print("F1")
-    print(f1_score(y_test, y_pred_test))
-
 if classifiers['logistic']:
     print('\n Training Logistic Regression \n')
 
@@ -396,15 +341,15 @@ if classifiers['logistic']:
 
     logistic_model = train_logistic(params_log,
                                     x_train=X_train_balanced_d,
-                                    y_train = y_train_balanced_d,
+                                    y_train=y_train_balanced_d,
                                     n_folds=10,
                                     random_state=123,
                                     stratified=True,
                                     shuffle=True
                                     )
 
-    lm_x_train_probs = logistic_model.predict_proba(X_train_d)
-    lm_x_test_probs = logistic_model.predict_proba(X_test_d)
+    lm_x_train_probas = logistic_model.predict_proba(X_train_d)
+    lm_x_test_probas = logistic_model.predict_proba(X_test_d)
 
     y_pred_full = logistic_model.predict(X_preprocessed_dummies)
     y_pred_test = logistic_model.predict(X_test_d)
@@ -443,7 +388,7 @@ if classifiers['b_naive_bayes']:
                   'fit_prior': False
                   }
 
-    b_naive_bayes_model = train_Bernoulli_NaiveBayes(params_bnb,
+    b_naive_bayes_model = train_bernoulli_naivebayes(params_bnb,
                                                      x_train=X_train_balanced_d,
                                                      y_train=y_train_balanced_d,
                                                      n_folds=10,
@@ -452,8 +397,8 @@ if classifiers['b_naive_bayes']:
                                                      shuffle=True
                                                      )
 
-    bnn_x_train_probs = b_naive_bayes_model.predict_proba(X_train_d)
-    bnn_x_test_probs = b_naive_bayes_model.predict_proba(X_test_d)
+    bnn_x_train_probas = b_naive_bayes_model.predict_proba(X_train_d)
+    bnn_x_test_probas = b_naive_bayes_model.predict_proba(X_test_d)
 
     y_pred_full = b_naive_bayes_model.predict(X_preprocessed_dummies)
     y_pred_test = b_naive_bayes_model.predict(X_test_d)
@@ -496,17 +441,17 @@ if classifiers['random_forest']:
                  'random_state': 123
                  }
 
-    random_forest_model = train_Random_Forests(params_rf,
-                                               x_train=X_train_balanced_d,
-                                               y_train=y_train_balanced_d,
-                                               n_folds=10,
-                                               random_state=123,
-                                               stratified=True,
-                                               shuffle=True
-                                               )
+    random_forest_model = train_random_forest(params_rf,
+                                              x_train=X_train_balanced_d,
+                                              y_train=y_train_balanced_d,
+                                              n_folds=10,
+                                              random_state=123,
+                                              stratified=True,
+                                              shuffle=True
+                                              )
 
-    rf_x_train_probs = random_forest_model.predict_proba(X_train_d)
-    rf_x_test_probs = random_forest_model.predict_proba(X_test_d)
+    rf_x_train_probas = random_forest_model.predict_proba(X_train_d)
+    rf_x_test_probas = random_forest_model.predict_proba(X_test_d)
 
     y_pred_full = random_forest_model.predict(X_preprocessed_dummies)
     y_pred_test = random_forest_model.predict(X_test_d)
@@ -554,8 +499,8 @@ if classifiers['svm']:
                           shuffle=True
                           )
 
-    svm_x_train_probs = svm_model.predict_proba(X_train_d)
-    svm_x_test_probs = svm_model.predict_proba(X_test_d)
+    svm_x_train_probas = svm_model.predict_proba(X_train_d)
+    svm_x_test_probas = svm_model.predict_proba(X_test_d)
 
     y_pred_full = svm_model.predict(X_preprocessed_dummies)
     y_pred_test = svm_model.predict(X_test_d)
@@ -596,7 +541,7 @@ if classifiers['c_naive_bayes']:
                   'norm': False
                   }
 
-    cnb_model = train_complement_naiveBayes(params_cnb,
+    cnb_model = train_complement_naivebayes(params_cnb,
                                             x_train=X_train_balanced_d,
                                             y_train=y_train_balanced_d,
                                             n_folds=10,
@@ -605,8 +550,8 @@ if classifiers['c_naive_bayes']:
                                             shuffle=True
                                             )
 
-    cnb_x_train_probs = cnb_model.predict_proba(X_train_d)
-    cnb_x_test_probs = cnb_model.predict_proba(X_test_d)
+    cnb_x_train_probas = cnb_model.predict_proba(X_train_d)
+    cnb_x_test_probas = cnb_model.predict_proba(X_test_d)
 
     y_pred_full = cnb_model.predict(X_preprocessed_dummies)
     y_pred_test = cnb_model.predict(X_test_d)
@@ -637,7 +582,7 @@ if classifiers['c_naive_bayes']:
     print("F1")
     print(f1_score(y_test_d, y_pred_test))
 
-### Advanced Classifiers ###
+# Advanced Classifiers
 
 if classifiers['xgboost']:
     print('\n Training XGBoost \n')
@@ -665,8 +610,8 @@ if classifiers['xgboost']:
                                   random_state=123
                                   )
 
-    xgb_x_train_probs = xgb_model_1.predict_proba(X_train_l)
-    xgb_x_test_probs = xgb_model_1.predict_proba(X_test_l)
+    xgb_x_train_probas = xgb_model_1.predict_proba(X_train_l)
+    xgb_x_test_probas = xgb_model_1.predict_proba(X_test_l)
 
     y_pred_full = xgb_model_1.predict(X_preprocessed_label)
     y_pred_test = xgb_model_1.predict(X_test_l)
@@ -697,52 +642,6 @@ if classifiers['xgboost']:
     print("F1")
     print(f1_score(y_test_l, y_pred_test))
 
-if classifiers['lightgbm']:
-    print('Training LightGBM')
-
-    lgbm_params_1 = {
-        'boosting_type': 'gbdt',
-        'num_leaves': 1000,
-        'max_depth': 10,
-        'learning_rate': 0.01,
-        'n_estimators': 1000,
-        # 'subsample_for_bin': 1,
-        'objective': 'binary',
-        # 'class_weight': 0,
-        # 'min_split_gain': 0.8,
-        # 'min_child_weight': 0.8,
-        # 'min_child_samples':0.8,
-        # 'subsample': 'binary:logistic',
-        # 'subsample_freq': -1,
-        # 'colsample_bytree': 1,
-        # 'reg_alpha':1,
-        # 'reg_lambda': 27,
-        # 'random_state': 'logloss',
-        # 'n_jobs': 'gain',
-        # 'silent':np.nan,
-        # 'importance_type':10,
-    }
-
-    lgbm_model_1 = train_lgbm_model(X_train, y_train,
-                                                  params= lgbm_params_1,
-                                                  n_folds=10,
-                                                  early_stopping=50,
-                                                  random_state=123)
-
-    lgbm_x_train_probs = lgbm_model_1.predict_proba(X_train)
-    lgbm_x_test_probs = lgbm_model_1.predict_proba(X_test)
-
-if classifiers['neural_net']:
-    print('Training Neural Net')
-
-    nn_model_1 = train_nn_model(X_train, y_train,
-                                              epochs=20,
-                                              n_folds=10,
-                                              random_state=123)
-
-    nn_x_train_probs = nn_model_1.predict_proba(X_train)
-    nn_x_test_probs = nn_model_1.predict_proba(X_test)
-
 ######################################### 2ND LEVEL TRAINING ###########################################################
 
 print('\n First level predictions finished. \n')
@@ -760,46 +659,38 @@ if classifiers['nearest_centroid']:
     train_probas['nearest_centroid'] = nc_x_train_preds
     test_probas['nearest_centroid'] = nc_x_test_preds
 if classifiers['knn']:
-    train_probas['knn'] = knn_x_train_probs[:,1]
-    test_probas['knn'] = knn_x_test_probs[:,1]
+    train_probas['knn'] = knn_x_train_probas[:,1]
+    test_probas['knn'] = knn_x_test_probas[:,1]
 if classifiers['decision_tree']:
-    train_probas['decision_tree'] = dt_x_train_probs[:,1]
-    test_probas['decision_tree'] = dt_x_test_probs[:,1]
-if classifiers['rule_learner']:
-    train_probas['rule_learner'] = rl_x_train_probs[:,1]
-    test_probas['rule_learner'] = rl_x_test_probs[:,1]
+    train_probas['decision_tree'] = dt_x_train_probas[:,1]
+    test_probas['decision_tree'] = dt_x_test_probas[:,1]
 if classifiers['b_naive_bayes']:
-    train_probas['b_naive_bayes'] = bnn_x_train_probs[:,1]
-    test_probas['b_naive_bayes'] = bnn_x_test_probs[:,1]
+    train_probas['b_naive_bayes'] = bnn_x_train_probas[:,1]
+    test_probas['b_naive_bayes'] = bnn_x_test_probas[:,1]
 if classifiers['logistic']:
-    train_probas['logistic'] = lm_x_train_probs[:,1]
-    test_probas['logistic'] = lm_x_test_probs[:,1]
+    train_probas['logistic'] = lm_x_train_probas[:,1]
+    test_probas['logistic'] = lm_x_test_probas[:,1]
 if classifiers['random_forest']:
-    train_probas['random_forest'] = rf_x_train_probs[:,1]
-    test_probas['random_forest'] = rf_x_test_probs[:,1]
+    train_probas['random_forest'] = rf_x_train_probas[:,1]
+    test_probas['random_forest'] = rf_x_test_probas[:,1]
 if classifiers['svm']:
-    train_probas['svm'] = svm_x_train_probs[:,1]
-    test_probas['svm'] = svm_x_test_probs[:,1]
+    train_probas['svm'] = svm_x_train_probas[:,1]
+    test_probas['svm'] = svm_x_test_probas[:,1]
 if classifiers['c_naive_bayes']:
-    train_probas['c_naive_bayes'] = cnb_x_train_probs[:,1]
-    test_probas['c_naive_bayes'] = cnb_x_test_probs[:,1]
+    train_probas['c_naive_bayes'] = cnb_x_train_probas[:,1]
+    test_probas['c_naive_bayes'] = cnb_x_test_probas[:,1]
 if classifiers['xgboost']:
-    train_probas['xgboost'] = xgb_x_train_probs[:,1]
-    test_probas['xgboost'] = xgb_x_test_probs[:,1]
-if classifiers['lightgbm']:
-    train_probas['lightgbm'] = lgbm_x_train_probs[:,1]
-    test_probas['lightgbm'] = lgbm_x_test_probs[:,1]
-if classifiers['neural_net']:
-    train_probas['neural_net'] = nn_x_train_probs[:,1]
-    test_probas['neural_net'] = nn_x_test_probs[:,1]
+    train_probas['xgboost'] = xgb_x_train_probas[:,1]
+    test_probas['xgboost'] = xgb_x_test_probas[:,1]
 
-train_probas= train_probas.set_index(y_train_l.index)
+train_probas = train_probas.set_index(y_train_l.index)
 
 train_probas.to_csv("1st_level_probs_train.csv")
 test_probas.to_csv("1st_level_probs_test.csv")
 
 train_probas = train_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 test_probas = test_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
+y_full_reconstructed = y_train_l.append(y_test_l)
 
 x_train_probas_balanced, y_train_probas_balanced = data_balancing(train_probas, y_train_l)
 
@@ -807,21 +698,19 @@ print('\n Starting with second level predictions. \n')
 
 print('\n Training Ensemble using XGBoost \n')
 
-ensemble_xgb_params_1 = {
-        'gamma': 0.05,
-        'booster': 'gblinear',
-        'max_depth': 3,
-        'min_child_weight': 1,
-        'subsample': 0.6,
-        'colsample_bytree': 0.6,
-        'reg_lambda': 0.01,
-        'reg_alpha': 0,
-        'learning_rate': 0.01,
-        'n_estimators': 100000,
-        'objective': 'binary:logistic',
-        'nthread': -1,
-        'seed': 27
-    }
+ensemble_xgb_params_1 = {'booster': 'gblinear',
+                         'colsample_bytree': 0.6,
+                         'gamma': 0.05,
+                         'learning_rate': 0.01,
+                         'max_depth': 3,
+                         'min_child_weight': 1,
+                         'n_estimators': 1000,
+                         'nthread': -1,
+                         'objective': 'binary:logistic',
+                         'reg_alpha': 0,
+                         'reg_lambda': 1,
+                         'seed': 27,
+                         'subsample': 0.6}
 
 ensemble_model_xgb_1 = train_xgb_ensemble(y_train=y_train_l,
                                           x_train=train_probas,
@@ -837,11 +726,11 @@ ensemble_model_xgb_1 = train_xgb_ensemble(y_train=y_train_l,
 print('Training Ensemble using RandomForest')
 
 ensemble_params_rf = {
-        'n_estimators': 2000,
-        'max_depth': 25,
+        'n_estimators': 15,
+        'max_depth': 21,
         'min_samples_split': 2,
-        'min_samples_leaf': 5,
-        'max_features': None
+        'min_samples_leaf': 2,
+        'max_features': 5
     }
 
 ensemble_model_rf = train_rf_ensemble(x_train=train_probas,
@@ -851,9 +740,7 @@ ensemble_model_rf = train_rf_ensemble(x_train=train_probas,
                                       y_test=y_test_l,
                                       x_test=test_probas,
                                       params=ensemble_params_rf,
-                                      n_folds=5,
+                                      n_folds=10,
                                       random_state=123
                                       )
-
-######################################### MODEL EVALUATION #############################################################
 
