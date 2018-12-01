@@ -10,7 +10,8 @@ warnings.filterwarnings('ignore')
 # Print all columns. Dont hide any.
 pd.set_option('display.max_columns', None)
 
-bankingcalldata = pd.read_csv('/Users/mariusbock/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
+# NOTE: Adjust relative file path to your file system
+bankingcalldata = pd.read_csv('bank-additional-full.csv', sep=';')
 
 print('Full dataset shape: ')
 print(bankingcalldata.shape)
@@ -27,7 +28,7 @@ y_full.replace(('yes', 'no'), (1, 0), inplace=True)
 
 # Create new features
 X_full = not_contacted(X_full)
-X_full = contacted_last_9_days(X_full)
+X_full = contacted_last_9_months(X_full)
 X_full = campaign_split(X_full)
 X_full = elder_person(X_full)
 X_full = is_student(X_full)
@@ -38,7 +39,6 @@ X_full = in_education(X_full)
 # Apply binning
 X_full['age'] = bin_age(X_full).astype('object')
 X_full['duration'] = bin_duration(X_full).astype('object')
-X_full['pmonths'] = bin_pdays(X_full).astype('object')
 
 X_preprocessed_one_hot = data_preprocessing(data_set=X_full,
                                             columns_to_drop=['duration', 'day_of_week', 'poutcome', 'pdays', 'campaign'],
@@ -354,34 +354,106 @@ params_xgb = {'gamma': [0.05, 0.5],
               'seed': [27]
               }
 
-best_xgb = search_best_params_and_evaluate_general_model(classifier="XGBoost",
-                                                         X_train=X_train_l,
-                                                         y_train=y_train_l,
-                                                         X_test=X_test_l,
-                                                         y_test=y_test_l,
-                                                         parameter_dict=params_xgb,
-                                                         n_folds=5
-                                                         )
+best_xgb_unbalanced = search_best_params_and_evaluate_general_model(classifier="XGBoost",
+                                                                    X_train=X_train_l,
+                                                                    y_train=y_train_l,
+                                                                    X_test=X_test_l,
+                                                                    y_test=y_test_l,
+                                                                    parameter_dict=params_xgb,
+                                                                    n_folds=5
+                                                                    )
 
-best_xgb = search_best_params_and_evaluate_general_model(classifier="XGBoost",
-                                                         X_train=X_train_balanced_l,
-                                                         y_train=y_train_balanced_l,
-                                                         X_test=X_test_l,
-                                                         y_test=y_test_l,
-                                                         parameter_dict=params_xgb,
-                                                         n_folds=5
-                                                         )
+best_xgb_balanced = search_best_params_and_evaluate_general_model(classifier="XGBoost",
+                                                                  X_train=X_train_balanced_l,
+                                                                  y_train=y_train_balanced_l,
+                                                                  X_test=X_test_l,
+                                                                  y_test=y_test_l,
+                                                                  parameter_dict=params_xgb,
+                                                                  n_folds=5
+                                                                  )
 
 ######################################### ENSEMBLE XGBOOST #############################################################
 
 train_probas = pd.read_csv("1st_level_probs_train.csv")
 test_probas = pd.read_csv("1st_level_probs_test.csv")
-full_probas = train_probas.append(test_probas)
+y_train_e = pd.read_csv("1st_level_y_train.csv")
+y_test_e = pd.read_csv("1st_level_y_test.csv")
 
-train_probas = train_probas.set_index(y_train_l.index)
+full_probas = train_probas.append(test_probas)
+y_probas = y_train_e.append(y_test_e)
 
 train_probas = train_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 test_probas = test_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 full_probas = full_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 
-x_train_probas_balanced, y_train_probas_balanced = data_balancing(train_probas, y_train_l)
+x_train_probas_balanced, y_train_probas_balanced = data_balancing(train_probas, y_train_e)
+
+params_xgb_ensemble = {
+    "gamma": [0.05, 1],
+    "booster": ['gbtree'],
+    "max_depth": [3, 25],
+    "min_child_weight": [1, 7],
+    "subsample": [0.6, 1],
+    "colsample_bytree": [0.6, 1],
+    "reg_lambda": [0.01, 1],
+    "reg_alpha": [0, 1],
+    "learning_rate": [0.1, 0.01],
+    "n_estimators": [100],
+    "objective": ["binary:logistic"],
+    "nthread": [-1],
+    "seed": [27]
+    }
+
+best_xgb_e_unbalanced = search_best_params_and_evaluate_general_model(classifier="XGBoost",
+                                                                      X_full=full_probas,
+                                                                      y_full=y_full,
+                                                                      X_train=train_probas,
+                                                                      y_train=y_train_e,
+                                                                      X_test=test_probas,
+                                                                      y_test=y_test_e,
+                                                                      parameter_dict=params_xgb_ensemble,
+                                                                      n_folds=5
+                                                                      )
+
+best_xgb_e_balanced = search_best_params_and_evaluate_general_model(classifier="XGBoost",
+                                                                    X_full=full_probas,
+                                                                    y_full=y_full,
+                                                                    X_train=x_train_probas_balanced,
+                                                                    y_train=y_train_probas_balanced,
+                                                                    X_test=test_probas,
+                                                                    y_test=y_test_e,
+                                                                    parameter_dict=params_xgb_ensemble,
+                                                                    n_folds=5
+                                                                    )
+
+######################################### ENSEMBLE RANDOM FOREST #######################################################
+
+params_rf_ensemble = {'n_estimators': [10, 50, 100, 200, 500, 800, 1000],
+                      'max_depth': [2, 5, 10, 20],
+                      'min_samples_split': [2, 3, 4],
+                      'min_samples_leaf': [2, 3, 4],
+                      'max_features': [1, 2, 3, 4, 5],
+                      'random_state': [123]
+                      }
+
+best_rf_e_unbalanced = search_best_params_and_evaluate_general_model(classifier="Random Forest",
+                                                                     X_full=full_probas,
+                                                                     y_full=y_full,
+                                                                     X_train=x_train_probas_balanced,
+                                                                     y_train=y_train_probas_balanced,
+                                                                     X_test=test_probas,
+                                                                     y_test=y_test_e,
+                                                                     parameter_dict=params_rf_ensemble,
+                                                                     n_folds=5
+                                                                     )
+
+best_rf_e_balanced = search_best_params_and_evaluate_general_model(classifier="Random Forest",
+                                                                   X_full=full_probas,
+                                                                   y_full=y_full,
+                                                                   X_train=train_probas,
+                                                                   y_train=y_train_e,
+                                                                   X_test=test_probas,
+                                                                   y_test=y_test_e,
+                                                                   parameter_dict=params_rf_ensemble,
+                                                                   n_folds=5
+                                                                   )

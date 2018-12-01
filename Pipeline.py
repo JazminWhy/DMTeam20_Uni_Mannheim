@@ -6,10 +6,12 @@ import warnings
 warnings.filterwarnings('ignore')
 
 ######################################### DATA LOADING #################################################################
+
 # Print all columns. Dont hide any.
 pd.set_option('display.max_columns', None)
 
-bankingcalldata = pd.read_csv('/Users/mariusbock/PycharmProjects/DMTeam20_Uni_Mannheim/input/bank-additional-full.csv', sep=';')
+# NOTE: Adjust relative file path to your file system
+bankingcalldata = pd.read_csv('bank-additional-full.csv', sep=';')
 
 print('Full dataset shape: ')
 print(bankingcalldata.shape)
@@ -26,7 +28,7 @@ y_full.replace(('yes', 'no'), (1, 0), inplace=True)
 
 # Create new features
 X_full = not_contacted(X_full)
-X_full = contacted_last_9_days(X_full)
+X_full = contacted_last_9_months(X_full)
 X_full = campaign_split(X_full)
 X_full = elder_person(X_full)
 X_full = is_student(X_full)
@@ -36,8 +38,6 @@ X_full = in_education(X_full)
 
 # Apply binning
 X_full['age'] = bin_age(X_full).astype('object')
-X_full['pmonths'] = bin_pdays(X_full).astype('object')
-
 
 X_preprocessed_one_hot = data_preprocessing(data_set=X_full,
                                             columns_to_drop=['duration', 'day_of_week','poutcome', 'pdays', 'campaign'],
@@ -683,13 +683,24 @@ if classifiers['xgboost']:
     test_probas['xgboost'] = xgb_x_test_probas[:,1]
 
 train_probas = train_probas.set_index(y_train_l.index)
+test_probas = test_probas.set_index(y_test_l.index)
 
-train_probas.to_csv("1st_level_probs_train.csv")
-test_probas.to_csv("1st_level_probs_test.csv")
+train_probas.to_csv('1st_level_probs_train.csv', index=None)
+test_probas.to_csv('1st_level_probs_test.csv', index=None)
+y_train_df = pd.DataFrame()
+y_train_df['y'] = y_train_l
+y_test_df = pd.DataFrame()
+y_test_df['y'] = y_test_l
 
+y_train_df.to_csv('1st_level_y_train.csv', index=None)
+y_test_df.to_csv('1st_level_y_test.csv', index=None)
+
+x_full_reconstructed = train_probas.append(test_probas)
+y_full_reconstructed = y_train_l.append(y_test_l)
+
+x_full_reconstructed = x_full_reconstructed.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 train_probas = train_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 test_probas = test_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
-y_full_reconstructed = y_train_l.append(y_test_l)
 
 x_train_probas_balanced, y_train_probas_balanced = data_balancing(train_probas, y_train_l)
 

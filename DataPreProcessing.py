@@ -171,24 +171,15 @@ def not_contacted(data_set):
     return data_set
 
 
-def contacted_last_9_days(data_set):
-    data_set['contacted_last_9_days'] = 0
-    data_set.loc[data_set['pdays'] < 10, 'contacted_last_9_days'] = 1
+def contacted_last_9_months(data_set):
+    data_set['contacted_last_9_months'] = 0
+    data_set.loc[data_set['pdays'] < 10, 'contacted_last_9_months'] = 1
     return data_set
 
 
 def campaign_split(data_set):
     data_set['campaign_many_calls'] = 0
     data_set.loc[data_set['campaign'] < 20, 'campaign_many_calls'] = 1
-    return data_set
-
-
-def bin_pdays(data_set):
-    data_set.loc[data_set['pdays'] == 999, 'pdays'] = 0
-    pmonths = data_set['pdays'] / 30
-    bins = [0, 3, 7, 1000]
-    data_set['pmonths'] = pd.cut(pmonths, bins, labels=['0To3months', '3To7months', 'moreThan7months'])
-    data_set['pmonths'] = data_set['pmonths'].astype('object')
     return data_set
 
 
