@@ -62,7 +62,7 @@ print(y_full.head())
 
 X_train, X_test, y_train, y_test = train_test_split(X_preprocessed, y_full, test_size=0.20, random_state=123, stratify=y_full)
 
-X_train, y_train = data_balancing(X_train, y_train)
+#X_train, y_train = data_balancing(X_train, y_train)
 
 print(X_train.shape)
 print(X_test.shape)
@@ -97,11 +97,11 @@ print(y_full.value_counts())
 #               'max_features': [None],
 #               'random_state': [123]
 #               }
-params_rdf = {'n_estimators':[1000, 3000, 5000],
-              'max_depth':[2, 3, 4, 5, None],
-              'min_samples_split':[2],
-              'min_samples_leaf': [2],
-              'max_features': [21],
+params_rdf = {'n_estimators':[10, 50, 100, 200, 500, 800, 1000],
+              'max_depth':[2, 5, 10, 20],
+              'min_samples_split':[2, 3, 4],
+              'min_samples_leaf': [2, 3, 4],
+              'max_features': [1, 2, 3, 4, 5, 6, 7, None],
               'random_state': [123]
               }
 best_rdf = search_best_params_and_evaluate_general_model(classifier="RandomForest",
