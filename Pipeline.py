@@ -36,7 +36,6 @@ X_full = in_education(X_full)
 
 # Apply binning
 X_full['age'] = bin_age(X_full).astype('object')
-X_full['duration'] = bin_duration(X_full).astype('object')
 X_full['pmonths'] = bin_pdays(X_full).astype('object')
 
 
@@ -730,8 +729,7 @@ ensemble_params_rf = {
         'max_depth': 21,
         'min_samples_split': 2,
         'min_samples_leaf': 2,
-        'max_features': 5
-    }
+        'max_features': 5}
 
 ensemble_model_rf = train_rf_ensemble(x_train=train_probas,
                                       y_train=y_train_l,
