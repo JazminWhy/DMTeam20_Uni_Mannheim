@@ -1,36 +1,25 @@
 # Imports
-import numpy as np
-#import matplotlib.pyplot as plt
-from scipy import interp
-from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import roc_curve
-from sklearn.metrics import auc
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import cross_val_predict
 from sklearn.model_selection import GridSearchCV
 from sklearn.utils.multiclass import unique_labels
 
-# Add loss functions -> check wikipedia article
-
-
-# Set value for k in cross validations
+# Set a default value for k in cross validations
 k = 10
 
 # Set the values for profit calculation
 profit_customer = 150 # Excluding the cost of a call!
-cost_call = 10 # State a positive value1
+cost_call = 10 # State a positive value!
 
-profit_tp = profit_customer - cost_call # Currently 990
+profit_tp = profit_customer - cost_call # Currently 140
 profit_fp = -cost_call # Currently -10
 
-# Confusion Matrix Report for prediction results (from Exercise 3)
+# Print a confusion matrix report (based on exercise 3)
 def confusion_matrix_report(y_true, y_pred):
     cm, labels = confusion_matrix(y_true, y_pred), unique_labels(y_true, y_pred)
     column_width = max([len(str(x)) for x in labels] + [6])  # 5 is value length
@@ -40,50 +29,6 @@ def confusion_matrix_report(y_true, y_pred):
         report += "{:>{}}".format(label1, column_width) + " ".join(
             ["{:{}d}".format(cm[i, j], column_width) for j in range(len(labels))]) + "\n"
     print(report)
-
-
-# Run a confusion matrix report based on a cross validation
-def confusion_matrix_report_cv(model, features, target):
-    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    predictions = cross_val_predict(model, features, target, cv=cross_validation)
-    confusion_matrix_report(target, predictions)
-
-
-# Cross validation for accuracy
-def cv_accuracy(model, features, target):
-    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    accuracies = cross_val_score(model, features, target, cv=cross_validation, scoring='accuracy')
-    min_accuracy = min(accuracies)
-    max_accuracy = max(accuracies)
-    avg_accuracy = np.mean(accuracies)
-
-    print("Minimum accuracy: " + min_accuracy)
-    print("Maximum accuracy: " + max_accuracy)
-    print("Average accuracy: " + avg_accuracy)
-
-# Print a classification report based on a cross validation
-def classification_report_cv(model, features, target):
-    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    predictions = cross_val_predict(model, features, target, cv=cross_validation)
-    print(classification_report(target, predictions))
-
-
-# # Print ROC curve (based on exercise 4)
-# def print_roc(models, features, target, positive_label):
-#     plt.figure(figsize=(10, 10))
-#     plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r', label='Luck', alpha=.8)  # draw diagonal
-#
-#     count = 1
-#     for model in models:
-#         mean_fpr, mean_tpr, mean_auc, std_auc = get_roc(k, model, features.values, target, positive_label)
-#         plt.plot(mean_fpr, mean_tpr, label='Model '+count+' (AUC: {:.3f} $\pm$ {:.3f})'.format(mean_auc, std_auc))
-#         count += 1
-#
-#     plt.xlabel('false positive rate')
-#     plt.ylabel('true positive rate')
-#     plt.legend()
-#     plt.show()
-
 
 # Grid search generalized (generalization of exercise 5)
 def grid_search(model, features, target, positive_label, parameters, fit_params, score, folds):
@@ -111,7 +56,7 @@ def grid_search(model, features, target, positive_label, parameters, fit_params,
     for i in range(len(results['params'])):
         print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
 
-
+# Grid search that returns the best model
 def grid_search_model(model, features, target, positive_label, parameters, fit_params, score, folds):
     k = folds
     if score == "precision":
@@ -145,116 +90,21 @@ def grid_search_model(model, features, target, positive_label, parameters, fit_p
     return grid_search_estimator.best_estimator_
 
 
-# Print a cost matrix (check order!)
+# Print a cost matrix
 def cost_matrix(y_true, y_pred, cost_fp, cost_fn):
     cm = confusion_matrix(y_true, y_pred)
     cost = cm[0][1] * cost_fp + cm[1][0] * cost_fn
     print('Total cost of the model: ' + str(cost))
 
+# Print a profit matrix
 def profit_matrix(y_true, y_pred, profit_tp, profit_fp):
     cm = confusion_matrix(y_true, y_pred)
     profit = cm[1][1] * profit_tp + cm[0][1] * profit_fp
     print('Total profit of the model: ' + str(profit))
     print(cm)
 
-# Calculate roc_avg (from exercise 4)
-def get_roc(model, features, target, positive_label):
-    mean_fpr = np.linspace(0, 1, 100)  # = [0.0, 0.01, 0.02, 0.03, ... , 0.99, 1.0]
-    tprs = []
-    aucs = []
-    cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-    for train_indices, test_indices in cross_validation.split(features, target):
-        train_data = features[train_indices]
-        train_target = target[train_indices]
-        model.fit(train_data, train_target)
-
-        test_data = features[test_indices]
-        test_target = target[test_indices]
-        decision_for_each_class = model.predict_proba(test_data)  # have to use predict_proba or decision_function
-
-        fpr, tpr, thresholds = roc_curve(test_target, decision_for_each_class[:, 1], pos_label=positive_label)
-        tprs.append(interp(mean_fpr, fpr, tpr))
-        tprs[-1][0] = 0.0  # tprs[-1] access the last element
-        aucs.append(auc(fpr, tpr))
-
-    # plt.plot(fpr, tpr)# plot for each fold
-
-    mean_tpr = np.mean(tprs, axis=0)
-    mean_tpr[-1] = 1.0  # set the last tpr to 1
-    mean_auc = auc(mean_fpr, mean_tpr)
-    std_auc = np.std(aucs)
-
-    return mean_fpr, mean_tpr, mean_auc, std_auc
-
-
-# def grid_search_cost_model_balanced(model, features, target, parameters, fit_params, folds):
-#     k = folds
-#     model_scorer = make_scorer(profit_score_function_balanced, greater_is_better=True)
-#     print('grid search started with ' + str(k) + ' folds')
-#     cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-#     grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
-#                                          cv=cross_validation, fit_params=fit_params, verbose=2)
-#     grid_search_estimator.fit(features, target)
-#
-#     results = grid_search_estimator.cv_results_
-#     for i in range(len(results['params'])):
-#         print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
-#
-#     print("best profit is {} with params {} ".format(grid_search_estimator.best_score_,
-#                                                       grid_search_estimator.best_params_))
-#
-#     return grid_search_estimator.best_estimator_
-
-
-# def grid_search_cost_model_unbalanced(model, features, target, parameters, fit_params, folds):
-#     k = folds
-#     model_scorer = make_scorer(profit_score_function_unbalanced, greater_is_better=True)
-#     print('grid search started with ' + str(k) + ' folds')
-#     cross_validation = StratifiedKFold(n_splits=k, shuffle=True, random_state=10)
-#     grid_search_estimator = GridSearchCV(model, parameters, scoring=model_scorer,
-#                                          cv=cross_validation, fit_params=fit_params, verbose=2)
-#     grid_search_estimator.fit(features, target)
-#
-#     results = grid_search_estimator.cv_results_
-#     for i in range(len(results['params'])):
-#         print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
-#
-#     print("best profit is {} with params {} ".format(grid_search_estimator.best_score_,
-#                                                       grid_search_estimator.best_params_))
-#
-#     return grid_search_estimator.best_estimator_
-
-
-# def profit_score_function_balanced(y_true, y_predicted):
-#     score = 0
-#     for i, v in enumerate(y_true, 1):
-#         if y_predicted[i-1] == 1 and v == 1: # TP
-#             score_i = profit_tp*1
-#         if y_predicted[i-1] == 1 and v == 0: # FP (Called, but no subscription)
-#             score_i = profit_fp*9 # times 9 to revert the balancing
-#         if y_predicted[i-1] == 0 and v == 1: # FN (Missed, but would have subscribed)
-#             score_i = 0*1 # Otherwise it's redundant
-#         if y_predicted[i-1] == 0 and v == 0:
-#             score_i = 0*9 # Otherwise it's redundant
-#         score += score_i
-#     return score
-
-
-# def profit_score_function_unbalanced(y_true, y_predicted):
-#     score = 0
-#     for i, v in enumerate(y_true, 1):
-#         if y_predicted[i-1] == 1 and v == 1: # TP
-#             score_i = profit_tp
-#         if y_predicted[i-1] == 1 and v == 0: # FP (Called, but no subscription)
-#             score_i = profit_fp # profit_fp is negative!
-#         if y_predicted[i-1] == 0 and v == 1: # FN (Missed, but would have subscribed)
-#             score_i = 0 # Otherwise it's redundant
-#         if y_predicted[i-1] == 0 and v == 0:
-#             score_i = 0 # Otherwise it's redundant
-#         score += score_i
-#     return score
-
-def profit_score_function(y_true, y_predicted): #Same as the_unbalanced function
+# Define the profit score function
+def profit_score_function(y_true, y_predicted):
     score = 0
     score_i = 0
     for i, v in enumerate(y_true, 1):
@@ -269,6 +119,7 @@ def profit_score_function(y_true, y_predicted): #Same as the_unbalanced function
         score += score_i
     return score
 
+# Run a grid search based on the cost function and return the best model
 def grid_search_cost_model(model, features, target, parameters, fit_params, folds):
     k = folds
     model_scorer = make_scorer(profit_score_function, greater_is_better=True)
@@ -287,9 +138,11 @@ def grid_search_cost_model(model, features, target, parameters, fit_params, fold
 
     return grid_search_estimator.best_estimator_
 
+# Function to get a scorer for the profit function
 def get_profit_scorer ():
     return make_scorer(profit_score_function, greater_is_better=True)
 
+# Run a grid search based on the cost function and return the best parameters
 def grid_search_cost_params(model, features, target, parameters, fit_params, folds):
     k = folds
     print('grid search started with ' + str(k) + ' folds')
@@ -306,5 +159,3 @@ def grid_search_cost_params(model, features, target, parameters, fit_params, fol
                                                       grid_search_estimator.best_params_))
 
     return grid_search_estimator.best_params_
-
-
