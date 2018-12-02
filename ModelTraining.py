@@ -11,6 +11,14 @@ from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 from sklearn.model_selection import StratifiedKFold, KFold
 
+__author__ = "Marius Bock, Hendrik Roeder, Jasmin Weimueller"
+
+######################################### DISCLAIMER ###################################################################
+
+# This class features all methods used for training models.
+# It as well incorporates the grid search function for finding the best model based on our custom profit function.
+
+########################################################################################################################
 
 def train_naive_bayes(params, x_train, y_train, n_folds, random_state, stratified = True, shuffle = True):
 

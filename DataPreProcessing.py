@@ -4,6 +4,13 @@ from sklearn import preprocessing
 from sklearn.preprocessing import OneHotEncoder
 from category_encoders.one_hot import OneHotEncoder
 
+__author__ = "Soumya Arun Barikeri"
+
+######################################### DISCLAIMER ###################################################################
+
+# This class features all methods used for preprocessing and feature engineering.
+
+########################################################################################################################
 
 # Check for missing values in the data set
 def check_missing_values(data_set):

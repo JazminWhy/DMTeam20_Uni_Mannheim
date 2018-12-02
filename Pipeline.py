@@ -5,6 +5,13 @@ from sklearn.model_selection import train_test_split
 import warnings
 warnings.filterwarnings('ignore')
 
+
+######################################### DISCLAIMER ###################################################################
+
+# This class is the final pipeline. It trains various classifiers and finally trains 2 meta classifiers on the predicted
+# probabilities of the first level classifiers. It incorporates all methods of the other classes and is the final
+# product of our project.
+
 ######################################### DATA LOADING #################################################################
 
 # Print all columns. Dont hide any.
@@ -39,6 +46,7 @@ X_full = in_education(X_full)
 # Apply binning
 X_full['age'] = bin_age(X_full).astype('object')
 
+# create preprocessed datasets (one-hot, dummy and label encoded)
 X_preprocessed_one_hot = data_preprocessing(data_set=X_full,
                                             columns_to_drop=['duration', 'day_of_week','poutcome', 'pdays', 'campaign'],
                                             columns_to_onehot=['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month'],
@@ -60,7 +68,7 @@ X_preprocessed_label = data_preprocessing(data_set=X_full,
                                           columns_to_label=['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month'],
                                           normalise=True)
 
-
+# perform 80/20 train-test-split for each
 X_train_o, X_test_o, y_train_o, y_test_o = train_test_split(X_preprocessed_one_hot, y_full,
                                                             test_size=0.20, random_state=42, stratify=y_full)
 X_train_d, X_test_d, y_train_d, y_test_d = train_test_split(X_preprocessed_dummies, y_full,
@@ -68,7 +76,7 @@ X_train_d, X_test_d, y_train_d, y_test_d = train_test_split(X_preprocessed_dummi
 X_train_l, X_test_l, y_train_l, y_test_l = train_test_split(X_preprocessed_label, y_full,
                                                             test_size=0.20, random_state=42, stratify=y_full)
 
-
+# create balanced train data for each
 X_train_balanced_o, y_train_balanced_o = data_balancing(X_train_o, y_train_o)
 X_train_balanced_l, y_train_balanced_l = data_balancing(X_train_l, y_train_l)
 X_train_balanced_d, y_train_balanced_d = data_balancing(X_train_d, y_train_d)
@@ -647,7 +655,7 @@ print('\n First level predictions finished. \n')
 
 print('\n Saving predictions to file. \n')
 
-# Create dataframe with models from 1st Level Training
+# Create dataframe with predicted probabilites from each 1st level model
 train_probas = pd.DataFrame()
 test_probas = pd.DataFrame()
 
@@ -682,26 +690,24 @@ if classifiers['xgboost']:
     train_probas['xgboost'] = xgb_x_train_probas[:,1]
     test_probas['xgboost'] = xgb_x_test_probas[:,1]
 
+# set index
 train_probas = train_probas.set_index(y_train_l.index)
 test_probas = test_probas.set_index(y_test_l.index)
 
+# save to csvs for future reference
 train_probas.to_csv('1st_level_probs_train.csv', index=None)
 test_probas.to_csv('1st_level_probs_test.csv', index=None)
-y_train_df = pd.DataFrame()
-y_train_df['y'] = y_train_l
-y_test_df = pd.DataFrame()
-y_test_df['y'] = y_test_l
 
-y_train_df.to_csv('1st_level_y_train.csv', index=None)
-y_test_df.to_csv('1st_level_y_test.csv', index=None)
-
+# reconstruct full dataset
 x_full_reconstructed = train_probas.append(test_probas)
 y_full_reconstructed = y_train_l.append(y_test_l)
 
+# drop classifiers not used for ensemble
 x_full_reconstructed = x_full_reconstructed.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 train_probas = train_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 test_probas = test_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 
+# balance the new train data
 x_train_probas_balanced, y_train_probas_balanced = data_balancing(train_probas, y_train_l)
 
 print('\n Starting with second level predictions. \n')

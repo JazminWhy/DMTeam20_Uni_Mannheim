@@ -5,6 +5,14 @@ from sklearn.model_selection import train_test_split
 import warnings
 warnings.filterwarnings('ignore')
 
+__author__ = "Marius Bock, Hendrik Roeder, Jasmin Weimueller"
+
+######################################### DISCLAIMER ###################################################################
+
+# This class features the attempted grid searches.
+# This file is only supposed to be used for reference; beware that runtime is very long!
+# To find results, please see the used hyperparameters in the Pipeline.py file
+
 ######################################### DATA LOADING #################################################################
 
 # Print all columns. Dont hide any.
@@ -376,17 +384,15 @@ best_xgb_balanced = search_best_params_and_evaluate_general_model(classifier="XG
 
 train_probas = pd.read_csv("1st_level_probs_train.csv")
 test_probas = pd.read_csv("1st_level_probs_test.csv")
-y_train_e = pd.read_csv("1st_level_y_train.csv")
-y_test_e = pd.read_csv("1st_level_y_test.csv")
 
 full_probas = train_probas.append(test_probas)
-y_probas = y_train_e.append(y_test_e)
+y_full_reconstructed = y_train_l.append(y_test_l)
 
 train_probas = train_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 test_probas = test_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 full_probas = full_probas.drop(['c_naive_bayes', 'g_naive_bayes', 'b_naive_bayes', 'nearest_centroid', 'knn'], axis=1)
 
-x_train_probas_balanced, y_train_probas_balanced = data_balancing(train_probas, y_train_e)
+x_train_probas_balanced, y_train_probas_balanced = data_balancing(train_probas, y_train_l)
 
 params_xgb_ensemble = {
     "gamma": [0.05, 1],
@@ -406,22 +412,22 @@ params_xgb_ensemble = {
 
 best_xgb_e_unbalanced = search_best_params_and_evaluate_general_model(classifier="XGBoost",
                                                                       X_full=full_probas,
-                                                                      y_full=y_full,
+                                                                      y_full=y_full_reconstructed,
                                                                       X_train=train_probas,
-                                                                      y_train=y_train_e,
+                                                                      y_train=y_train_l,
                                                                       X_test=test_probas,
-                                                                      y_test=y_test_e,
+                                                                      y_test=y_test_l,
                                                                       parameter_dict=params_xgb_ensemble,
                                                                       n_folds=5
                                                                       )
 
 best_xgb_e_balanced = search_best_params_and_evaluate_general_model(classifier="XGBoost",
                                                                     X_full=full_probas,
-                                                                    y_full=y_full,
+                                                                    y_full=y_full_reconstructed,
                                                                     X_train=x_train_probas_balanced,
                                                                     y_train=y_train_probas_balanced,
                                                                     X_test=test_probas,
-                                                                    y_test=y_test_e,
+                                                                    y_test=y_test_l,
                                                                     parameter_dict=params_xgb_ensemble,
                                                                     n_folds=5
                                                                     )
@@ -438,22 +444,22 @@ params_rf_ensemble = {'n_estimators': [10, 50, 100, 200, 500, 800, 1000],
 
 best_rf_e_unbalanced = search_best_params_and_evaluate_general_model(classifier="Random Forest",
                                                                      X_full=full_probas,
-                                                                     y_full=y_full,
+                                                                     y_full=y_full_reconstructed,
                                                                      X_train=x_train_probas_balanced,
                                                                      y_train=y_train_probas_balanced,
                                                                      X_test=test_probas,
-                                                                     y_test=y_test_e,
+                                                                     y_test=y_test_l,
                                                                      parameter_dict=params_rf_ensemble,
                                                                      n_folds=5
                                                                      )
 
 best_rf_e_balanced = search_best_params_and_evaluate_general_model(classifier="Random Forest",
                                                                    X_full=full_probas,
-                                                                   y_full=y_full,
+                                                                   y_full=y_full_reconstructed,
                                                                    X_train=train_probas,
-                                                                   y_train=y_train_e,
+                                                                   y_train=y_train_l,
                                                                    X_test=test_probas,
-                                                                   y_test=y_test_e,
+                                                                   y_test=y_test_l,
                                                                    parameter_dict=params_rf_ensemble,
                                                                    n_folds=5
                                                                    )

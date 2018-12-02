@@ -9,6 +9,15 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import GridSearchCV
 from sklearn.utils.multiclass import unique_labels
 
+######################################### DISCLAIMER ###################################################################
+
+# This class features all methods used for evaluating predictions and determining the best hyperparameters through
+# grid search.
+
+########################################################################################################################
+
+__author__ = "Hendrik Roeder"
+
 # Set a default value for k in cross validations
 k = 10
 
@@ -18,6 +27,7 @@ cost_call = 10 # State a positive value!
 
 profit_tp = profit_customer - cost_call # Currently 140
 profit_fp = -cost_call # Currently -10
+
 
 # Print a confusion matrix report (based on exercise 3)
 def confusion_matrix_report(y_true, y_pred):
@@ -29,6 +39,7 @@ def confusion_matrix_report(y_true, y_pred):
         report += "{:>{}}".format(label1, column_width) + " ".join(
             ["{:{}d}".format(cm[i, j], column_width) for j in range(len(labels))]) + "\n"
     print(report)
+
 
 # Grid search generalized (generalization of exercise 5)
 def grid_search(model, features, target, positive_label, parameters, fit_params, score, folds):
@@ -55,6 +66,7 @@ def grid_search(model, features, target, positive_label, parameters, fit_params,
     results = grid_search_estimator.cv_results_
     for i in range(len(results['params'])):
         print("{}, {}".format(results['params'][i], results['mean_test_score'][i]))
+
 
 # Grid search that returns the best model
 def grid_search_model(model, features, target, positive_label, parameters, fit_params, score, folds):
@@ -96,12 +108,14 @@ def cost_matrix(y_true, y_pred, cost_fp, cost_fn):
     cost = cm[0][1] * cost_fp + cm[1][0] * cost_fn
     print('Total cost of the model: ' + str(cost))
 
+
 # Print a profit matrix
 def profit_matrix(y_true, y_pred, profit_tp, profit_fp):
     cm = confusion_matrix(y_true, y_pred)
     profit = cm[1][1] * profit_tp + cm[0][1] * profit_fp
     print('Total profit of the model: ' + str(profit))
     print(cm)
+
 
 # Define the profit score function
 def profit_score_function(y_true, y_predicted):
@@ -118,6 +132,7 @@ def profit_score_function(y_true, y_predicted):
             score_i = 0 # Otherwise it's redundant
         score += score_i
     return score
+
 
 # Run a grid search based on the cost function and return the best model
 def grid_search_cost_model(model, features, target, parameters, fit_params, folds):
@@ -138,9 +153,11 @@ def grid_search_cost_model(model, features, target, parameters, fit_params, fold
 
     return grid_search_estimator.best_estimator_
 
+
 # Function to get a scorer for the profit function
 def get_profit_scorer ():
     return make_scorer(profit_score_function, greater_is_better=True)
+
 
 # Run a grid search based on the cost function and return the best parameters
 def grid_search_cost_params(model, features, target, parameters, fit_params, folds):
