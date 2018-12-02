@@ -5,7 +5,7 @@ from sklearn.preprocessing import OneHotEncoder
 from category_encoders.one_hot import OneHotEncoder
 
 
-# Check for missing values in the data set and fill it with mean value of the column
+# Check for missing values in the data set
 def check_missing_values(data_set):
     if data_set.isnull().values.any():
         print('There are missing values in the dataset.')
@@ -14,12 +14,17 @@ def check_missing_values(data_set):
 
     columns = list(data_set.columns)
 
+    # Fill mean value in case of numerical data, and mode in case of categorical
     for column in columns:
         if data_set[column].isnull().values.any():
             print('There are missing values in the column ' + column)
-            mean_value = data_set[column].mean()
-            print('Filling the missing value with mean value of the column ' + column)
-            data_set[column] = data_set[column].fillna(mean_value)
+            if data_set[column].select_dtypes(include=[np.number]):
+                mean_value = data_set[column].mean()
+                print('Filling the missing value with mean value of the column ' + column)
+                data_set[column] = data_set[column].fillna(mean_value)
+            else:
+                print('Filling the missing value with mode value of the column ' + column)
+                data_set[column] = data_set[column].fillna(data_set[column].mode().iloc[0])
 
 
 def data_preprocessing(data_set, columns_to_drop, columns_to_onehot, columns_to_dummy, columns_to_label, normalise):
@@ -101,6 +106,7 @@ def data_preprocessing(data_set, columns_to_drop, columns_to_onehot, columns_to_
     print('Data after pre-processing')
     print(bank_data_norm_encoded.head())
 
+    # Check if all categorical columns are encoded
     print('Checking datatypes..')
     tmp = 0
     for i in bank_data_norm_encoded.columns.values:
@@ -114,21 +120,25 @@ def data_preprocessing(data_set, columns_to_drop, columns_to_onehot, columns_to_
     return bank_data_norm_encoded
 
 
+# New feature if age is greater than 60
 def elder_person(data_set):
     data_set['elder'] = np.where(data_set['age'] > 60, 1, 0)
     return data_set
 
 
+# New feature called student
 def is_student(data_set):
     data_set['student'] = np.where(data_set['job'] == "student", 1, 0)
     return data_set
 
 
+# New feature if mode of contact is cellular
 def cellular_contact(data_set):
     data_set['cellular'] = np.where(data_set['contact'] == "cellular", 1, 0)
     return data_set
 
 
+# New feature for euribor3m in range [1.5,2.5)
 def euribor_bin(data_set):
     data_set["euribor_bin"] = 0
     for index, row in data_set.iterrows():
@@ -137,6 +147,7 @@ def euribor_bin(data_set):
     return data_set
 
 
+# New feature for student with university degree
 def in_education(data_set):
     data_set["in_education"] = 0
     for index, row in data_set.iterrows():
@@ -152,12 +163,14 @@ def in_education(data_set):
     return data_set
 
 
+# Binning age feature into 4 bins
 def bin_age(data_set):
     bins = [0, 17, 34, 60, 100]
     data_set['age'] = pd.cut(data_set['age'], bins, labels=['Child', 'Adult', 'Middle_aged', 'Old'])
     return data_set['age'].astype('object')
 
 
+# Binning duration
 def bin_duration(data_set):
     duration_in_min = data_set['duration']/60
     bins = [0, 5, 10, 90]
@@ -165,24 +178,27 @@ def bin_duration(data_set):
     return data_set['duration'].astype('object')
 
 
+# New feature if customer not contacted earlier
 def not_contacted(data_set):
     data_set['not_contacted'] = 0
     data_set.loc[data_set['pdays'] == 999, 'not_contacted'] = 1
     return data_set
 
 
+# New feature if customer was contacted in last 9 months
 def contacted_last_9_months(data_set):
     data_set['contacted_last_9_months'] = 0
     data_set.loc[data_set['pdays'] < 10, 'contacted_last_9_months'] = 1
     return data_set
 
-
+# New feature if number of calls is less than 20
 def campaign_split(data_set):
     data_set['campaign_many_calls'] = 0
     data_set.loc[data_set['campaign'] < 20, 'campaign_many_calls'] = 1
     return data_set
 
 
+# Data balancing for 1:1(yes:no) split
 def data_balancing(x_train, y_train):
     y_train = pd.DataFrame(data=y_train)
     train_full_balance = pd.DataFrame(data=x_train)
