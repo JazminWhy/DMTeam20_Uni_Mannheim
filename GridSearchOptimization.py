@@ -126,6 +126,8 @@ best_log_unbalanced = search_best_params_and_evaluate_general_model(classifier="
                                                                     y_train=y_train_d,
                                                                     X_test=X_test_d,
                                                                     y_test=y_test_d,
+                                                                    X_full=X_preprocessed_dummies,
+                                                                    y_full=y_full,
                                                                     parameter_dict=params_log,
                                                                     n_folds=5
                                                                     )
@@ -135,6 +137,8 @@ best_log_balanced = search_best_params_and_evaluate_general_model(classifier="Lo
                                                                   y_train=y_train_balanced_d,
                                                                   X_test=X_test_d,
                                                                   y_test=y_test_d,
+                                                                  X_full=X_preprocessed_dummies,
+                                                                  y_full=y_full,
                                                                   parameter_dict=params_log,
                                                                   n_folds=5
                                                                   )
@@ -154,6 +158,8 @@ best_rf_unbalanced = search_best_params_and_evaluate_general_model(classifier="R
                                                                    y_train=y_train_d,
                                                                    X_test=X_test_d,
                                                                    y_test=y_test_d,
+                                                                   X_full=X_preprocessed_dummies,
+                                                                   y_full=y_full,
                                                                    parameter_dict=params_rf,
                                                                    n_folds=5
                                                                    )
@@ -163,6 +169,8 @@ best_rf_balanced = search_best_params_and_evaluate_general_model(classifier="Ran
                                                                  y_train=y_train_balanced_d,
                                                                  X_test=X_test_d,
                                                                  y_test=y_test_d,
+                                                                 X_full=X_preprocessed_dummies,
+                                                                 y_full=y_full,
                                                                  parameter_dict=params_rf,
                                                                  n_folds=5
                                                                  )
@@ -179,6 +187,8 @@ best_bnb_unbalanced = search_best_params_and_evaluate_general_model(classifier="
                                                                     y_train=y_train_d,
                                                                     X_test=X_test_d,
                                                                     y_test=y_test_d,
+                                                                    X_full=X_preprocessed_dummies,
+                                                                    y_full=y_full,
                                                                     parameter_dict=params_bnb,
                                                                     n_folds=5
                                                                     )
@@ -188,6 +198,8 @@ best_bnb_balanced = search_best_params_and_evaluate_general_model(classifier="Be
                                                                   y_train=y_train_balanced_d,
                                                                   X_test=X_test_d,
                                                                   y_test=y_test_d,
+                                                                  X_full=X_preprocessed_dummies,
+                                                                  y_full=y_full,
                                                                   parameter_dict=params_bnb,
                                                                   n_folds=5
                                                                   )
@@ -198,19 +210,23 @@ params_nc = {'metric': ['euclidean', 'manhattan']
              }
 
 best_nc_unbalanced = search_best_params_and_evaluate_general_model(classifier="NearestCentroid",
-                                                                   X_train=X_train_d,
-                                                                   y_train=y_train_d,
-                                                                   X_test=X_test_d,
-                                                                   y_test=y_test_d,
+                                                                   X_train=X_train_o,
+                                                                   y_train=y_train_o,
+                                                                   X_test=X_test_o,
+                                                                   y_test=y_test_o,
+                                                                   X_full=X_preprocessed_one_hot,
+                                                                   y_full=y_full,
                                                                    parameter_dict=params_nc,
                                                                    n_folds=5
                                                                    )
 
 best_nc_balanced = search_best_params_and_evaluate_general_model(classifier="NearestCentroid",
-                                                                 X_train=X_train_balanced_d,
-                                                                 y_train=y_train_balanced_d,
-                                                                 X_test=X_test_d,
-                                                                 y_test=y_test_d,
+                                                                 X_train=X_train_balanced_o,
+                                                                 y_train=y_train_balanced_o,
+                                                                 X_test=X_test_o,
+                                                                 y_test=y_test_o,
+                                                                 X_full=X_preprocessed_one_hot,
+                                                                 y_full=y_full,
                                                                  parameter_dict=params_nc,
                                                                  n_folds=5
                                                                  )
@@ -228,6 +244,8 @@ best_knn_unbalanced = search_best_params_and_evaluate_general_model(classifier="
                                                                     y_train=y_train_d,
                                                                     X_test=X_test_d,
                                                                     y_test=y_test_d,
+                                                                    X_full=X_preprocessed_dummies,
+                                                                    y_full=y_full,
                                                                     parameter_dict=params_knn,
                                                                     n_folds=5
                                                                     )
@@ -238,6 +256,8 @@ best_knn_balanced = search_best_params_and_evaluate_general_model(classifier="KN
                                                                   y_train=y_train_balanced_d,
                                                                   X_test=X_test_d,
                                                                   y_test=y_test_d,
+                                                                  X_full=X_preprocessed_dummies,
+                                                                  y_full=y_full,
                                                                   parameter_dict=params_knn,
                                                                   n_folds=5
                                                                   )
@@ -251,6 +271,8 @@ best_gnb_unbalanced = search_best_params_and_evaluate_general_model(classifier="
                                                                     y_train=y_train_d,
                                                                     X_test=X_test_d,
                                                                     y_test=y_test_d,
+                                                                    X_full=X_preprocessed_dummies,
+                                                                    y_full=y_full,
                                                                     parameter_dict=params_gnb,
                                                                     n_folds=5
                                                                     )
@@ -260,6 +282,8 @@ best_gnb_balanced = search_best_params_and_evaluate_general_model(classifier="Ga
                                                                   y_train=y_train_balanced_d,
                                                                   X_test=X_test_d,
                                                                   y_test=y_test_d,
+                                                                  X_full=X_preprocessed_dummies,
+                                                                  y_full=y_full,
                                                                   parameter_dict=params_gnb,
                                                                   n_folds=5
                                                                   )
@@ -286,6 +310,8 @@ best_cnb_balanced = search_best_params_and_evaluate_general_model(classifier="Co
                                                                   y_train=y_train_balanced_d,
                                                                   X_test=X_test_d,
                                                                   y_test=y_test_d,
+                                                                  X_full=X_preprocessed_dummies,
+                                                                  y_full=y_full,
                                                                   parameter_dict=params_gnb,
                                                                   n_folds=5
                                                                   )
@@ -307,6 +333,8 @@ best_dt_unbalanced = search_best_params_and_evaluate_general_model(classifier="D
                                                                    y_train=y_train_d,
                                                                    X_test=X_test_d,
                                                                    y_test=y_test_d,
+                                                                   X_full=X_preprocessed_dummies,
+                                                                   y_full=y_full,
                                                                    parameter_dict=params_dt,
                                                                    n_folds=5
                                                                    )
@@ -316,6 +344,8 @@ best_dt_balanced = search_best_params_and_evaluate_general_model(classifier="Dec
                                                                  y_train=X_train_balanced_d,
                                                                  X_test=X_test_d,
                                                                  y_test=X_test_d,
+                                                                 X_full=X_preprocessed_dummies,
+                                                                 y_full=y_full,
                                                                  parameter_dict=params_dt,
                                                                  n_folds=5
                                                                  )
@@ -331,6 +361,8 @@ best_svm_unbalanced = search_best_params_and_evaluate_general_model(classifier="
                                                                     y_train=y_train_d,
                                                                     X_test=X_test_d,
                                                                     y_test=y_test_d,
+                                                                    X_full=X_preprocessed_dummies,
+                                                                    y_full=y_full,
                                                                     parameter_dict=params_svm,
                                                                     n_folds=5
                                                                     )
@@ -340,6 +372,8 @@ best_svm_balanced = search_best_params_and_evaluate_general_model(classifier="Su
                                                                   y_train=X_train_balanced_d,
                                                                   X_test=X_test_d,
                                                                   y_test=X_test_d,
+                                                                  X_full=X_preprocessed_dummies,
+                                                                  y_full=y_full,
                                                                   parameter_dict=params_svm,
                                                                   n_folds=5
                                                                   )
@@ -367,6 +401,8 @@ best_xgb_unbalanced = search_best_params_and_evaluate_general_model(classifier="
                                                                     y_train=y_train_l,
                                                                     X_test=X_test_l,
                                                                     y_test=y_test_l,
+                                                                    X_full=X_preprocessed_label,
+                                                                    y_full=y_full,
                                                                     parameter_dict=params_xgb,
                                                                     n_folds=5
                                                                     )
@@ -376,6 +412,8 @@ best_xgb_balanced = search_best_params_and_evaluate_general_model(classifier="XG
                                                                   y_train=y_train_balanced_l,
                                                                   X_test=X_test_l,
                                                                   y_test=y_test_l,
+                                                                  X_full=X_preprocessed_label,
+                                                                  y_full=y_full,
                                                                   parameter_dict=params_xgb,
                                                                   n_folds=5
                                                                   )
